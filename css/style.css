@@ -276,3 +276,10 @@ body.locked .tabs, body.locked #sync-status { display: none; }
 
 /* ---------- steps ---------- */
 .meter.steps > div { background: linear-gradient(90deg, #ffe0d1 0%, #ffb48f 45%, var(--series-1) 100%); }
+
+/* ---------- installed app (notch / home indicator) ---------- */
+.topbar { padding-top: max(18px, env(safe-area-inset-top)); }
+.container { padding-bottom: max(96px, calc(env(safe-area-inset-bottom) + 72px)); }
+#toasts { bottom: max(20px, env(safe-area-inset-bottom)); }
+.device-status { background: var(--surface-2); border-radius: 12px; padding: 8px 12px; color: var(--text-2); }
+.device-status:empty { display: none; }

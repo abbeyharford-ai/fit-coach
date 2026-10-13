@@ -367,6 +367,18 @@ function renderProfile(root) {
 
 // ---------------------------------------------------------------- Settings
 
+async function showDeviceStatus(el) {
+  if (!el) return;
+  const saved = lock.hasVault();
+  const kept = await lock.persistStorage();
+  const app = lock.isInstalledApp();
+  el.innerHTML = [
+    saved ? "🔐 Login saved on this device (encrypted)" : "No login saved on this device yet",
+    app ? "📱 Opened as home-screen app" : "🌐 Opened in a browser tab",
+    kept ? "Storage: kept permanently" : "Storage: the browser may clear it if space runs low",
+  ].map(esc).join(" · ");
+}
+
 function renderSettings(root) {
   const s = store.getSettings();
   const configured = store.isConfigured();
@@ -380,6 +392,7 @@ function renderSettings(root) {
     <form class="card" id="conn">
       <h2>Connections</h2>
       <p class="small muted">Your token and API key stay on this device, encrypted with your passcode. Never paste them anywhere else.</p>
+      <p class="small device-status" id="device-status"></p>
       <div class="fields">
         <div class="field"><label>GitHub username</label><input name="ghOwner" value="${esc(s.ghOwner)}" ${s.demo ? "" : "required"} autocomplete="off"></div>
         <div class="field"><label>Private data repo</label><input name="ghRepo" value="${esc(s.ghRepo || "fit-coach-data")}" ${s.demo ? "" : "required"} autocomplete="off"></div>
@@ -412,6 +425,8 @@ function renderSettings(root) {
     </form>
 
   </div>`;
+
+  showDeviceStatus($("#device-status", root));
 
   $("#demo-on", root)?.addEventListener("click", () => {
     store.saveSettings({ ...s, demo: true });

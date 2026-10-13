@@ -50,7 +50,20 @@ export function sessionSecrets() {
 
 function startSession(secrets) {
   sessionStorage.setItem(SESSION_KEY, JSON.stringify({ secrets, lastActive: Date.now() }));
+  persistStorage();
 }
+
+/** Ask the browser not to evict our storage (the encrypted vault) under pressure or inactivity. */
+export async function persistStorage() {
+  try {
+    if (await navigator.storage?.persisted?.()) return true;
+    return Boolean(await navigator.storage?.persist?.());
+  } catch {
+    return false;
+  }
+}
+
+export const isInstalledApp = () => matchMedia("(display-mode: standalone)").matches || navigator.standalone === true;
 
 /** Encrypt `secrets` under `passcode` (replaces any existing vault) and unlock. */
 export async function createVault(passcode, secrets) {
