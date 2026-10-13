@@ -104,6 +104,8 @@ export async function fetchFile(name) {
   const s = getSettings();
   if (s.demo) return fetchDemo(name);
   const res = await gh(`data/${name}.json?ref=${encodeURIComponent(s.branch)}`);
+  // profile.json always exists in the data repo, so a 404 there means no file access.
+  if (res.status === 404 && name === "profile") throw new Error(TOKEN_PERMISSION_HELP);
   if (res.status === 404) {
     cache[name] = { data: structuredClone(DEFAULTS[name]), sha: null };
   } else if (!res.ok) {
@@ -152,6 +154,7 @@ export async function update(name, mutate, message = `Update ${name}`) {
       cache[name] = { data: next, sha: body.content.sha };
       return next;
     }
+    if (res.status === 404 || res.status === 403) throw new Error(TOKEN_PERMISSION_HELP);
     if (res.status !== 409 && res.status !== 422) {
       throw new Error(`GitHub ${res.status} saving ${name}.json: ${(await res.json().catch(() => ({}))).message || ""}`);
     }
@@ -167,7 +170,13 @@ export async function testConnection() {
   if (!res.ok) throw new Error(`GitHub ${res.status}: ${(await res.json().catch(() => ({}))).message || "check owner/repo/token"}`);
   const repo = await res.json();
   if (!repo.private) throw new Error(`${repo.full_name} is PUBLIC. Your health data repo must be private.`);
+  // Seeing the repo only needs metadata access; reading files needs Contents.
+  const files = await gh(`data/profile.json?ref=${encodeURIComponent(s.branch)}`);
+  if (files.status === 404 || files.status === 403) throw new Error(TOKEN_PERMISSION_HELP);
   return repo;
 }
+
+const TOKEN_PERMISSION_HELP =
+  "Your GitHub token can see the repo but isn't allowed to read or save its files. On github.com go to Settings → Developer settings → Fine-grained tokens → your token → Edit → Repository permissions → Contents → Read and write → Update. Then reload.";
 
 export const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
