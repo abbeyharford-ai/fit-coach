@@ -54,11 +54,11 @@ github.com → your avatar → Settings → Developer settings → **Fine-graine
 - Permissions → Repository → **Contents: Read and write**
 - Expiration: up to 1 year (you'll paste a new one when it expires)
 
-Open your site → ⚙︎ Settings → enter your username, `fit-coach-data` and the token → **Save & connect**. Then fill in **Your profile**.
+Open your site → ⚙︎ Settings → enter your username, `fit-coach-data` and the token, choose a passcode → **Save & connect**. Then fill in **Your profile**.
 
 ### 4. Add your Claude API key
 
-Get a key from console.anthropic.com (Settings → API keys) and paste it in the site's Settings. It's stored only in that browser, so do this once per device.
+Get a key from console.anthropic.com (Settings → API keys) and paste it in the site's Settings. It's stored encrypted in that browser only, so do this once per device.
 Model: Sonnet 5.5 is the default. Opus 5.5 (deeper coaching, about 2x the cost) and Haiku 5.5 (cheapest) are in the dropdown.
 
 ### 5. Connect Garmin
@@ -100,7 +100,7 @@ Check the log: you should see `Logged in. Syncing…`. Refresh your site and you
 - **Schedule drift**: GitHub can run scheduled jobs late, so the check-in arrives within ~3 hours after your wake hour. The job checks its own state, so nothing gets missed or doubled.
 - **Garmin library**: `garminconnect` is unofficial. If Garmin changes its login, the sync can break. Bump the version in `requirements.txt`, or rerun `garmin_login.py` and update the secret.
 - **Costs**: GitHub is free (the hourly job uses about 800 of your 2,000 free Actions minutes per month). Claude usage is pay-as-you-go: a chat message or the daily check-in costs a cent or two, and a scan read or a week's meal plan costs well under a dollar on Sonnet 5.5.
-- **Privacy**: your data lives only in your private repo. The website is public but holds no data or keys. Don't share your browser's saved settings or your tokens.
+- **Security**: your data lives only in your private repo; the public site holds no data or keys. On each device, your GitHub token and Claude key are encrypted with a passcode you choose (PBKDF2 + AES-256) and are only decrypted in the open tab. The app auto-locks after 30 minutes idle (or tap 🔒 Lock), and coach chats are wiped on lock. The page is only allowed to talk to GitHub and Claude. Forgot your passcode? Tap "Forgot passcode?" and paste a fresh token; your data isn't affected. For extra safety, turn on two-factor login for GitHub and the Anthropic console.
 - **Not medical advice**: the coach will tell you to see a professional for pain, medical conditions or medications.
 
 ## Local development

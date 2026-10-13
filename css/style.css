@@ -29,6 +29,7 @@
 }
 
 * { box-sizing: border-box; }
+[hidden] { display: none !important; }
 html, body { margin: 0; }
 body {
   background:
@@ -228,3 +229,13 @@ details[open] > summary::before { content: "–"; }
   .stat .value { font-size: 1.7rem; }
 }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation-duration: 0s !important; } }
+
+/* ---------- lock screen ---------- */
+body.locked .tabs, body.locked #sync-status { display: none; }
+.lock-screen { max-width: 620px; margin: 4vh auto 0; min-height: 520px; }
+.lock-screen h1 { margin-bottom: 8px; }
+.lock-sub { color: rgb(54 53 58 / .78); font-size: 1.05rem; max-width: 38ch; margin-bottom: 22px; }
+.lock-form label { color: rgb(54 53 58 / .75); }
+.lock-form input { background: rgb(255 255 255 / .7); backdrop-filter: blur(6px); }
+.lock-form input:focus { background: #fff; }
+.lock-error { color: var(--bad); font-weight: 500; min-height: 1.4em; margin: 10px 0 4px; }

@@ -1,5 +1,7 @@
 // Data layer: JSON files in your PRIVATE GitHub repo, read/written via the
-// GitHub Contents API with a fine-grained token kept in this browser only.
+// GitHub Contents API with a fine-grained token (decrypted from lock.js).
+
+import * as lock from "./lock.js";
 
 const SETTINGS_KEY = "fitcoach.settings";
 
@@ -13,16 +15,21 @@ export const DEFAULTS = {
   checkins: [],
 };
 
+// Non-secret settings (owner, repo, model) live in localStorage. The GitHub
+// token and Anthropic key come only from the unlocked passcode vault (lock.js).
 export function getSettings() {
+  let saved = {};
   try {
-    return { model: "claude-sonnet-5-5", branch: "main", ...JSON.parse(localStorage.getItem(SETTINGS_KEY) || "{}") };
-  } catch {
-    return { model: "claude-sonnet-5-5", branch: "main" };
-  }
+    saved = JSON.parse(localStorage.getItem(SETTINGS_KEY) || "{}");
+  } catch {}
+  for (const k of lock.SECRET_FIELDS) delete saved[k];
+  return { model: "claude-sonnet-5-5", branch: "main", ...saved, ...lock.sessionSecrets() };
 }
 
 export function saveSettings(s) {
-  localStorage.setItem(SETTINGS_KEY, JSON.stringify(s));
+  const rest = { ...s };
+  for (const k of lock.SECRET_FIELDS) delete rest[k];
+  localStorage.setItem(SETTINGS_KEY, JSON.stringify(rest));
 }
 
 export function isConfigured() {

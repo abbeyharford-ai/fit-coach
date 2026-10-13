@@ -2,7 +2,8 @@ import * as store from "../store.js";
 import { chatTurn, buildSnapshot } from "../claude.js";
 import { $, $$, esc, md, toast } from "../ui.js";
 
-// The conversation is kept exactly as the API returned it (append-only) so
+// Kept in sessionStorage (cleared on lock / tab close, never at rest on disk),
+// exactly as the API returned it (append-only) so
 // prompt caching works and thinking blocks stay valid between turns.
 const CONVO_KEY = "fitcoach.convo";
 const MAX_MESSAGES = 80;
@@ -18,7 +19,7 @@ const STARTERS = [
 
 function loadConvo() {
   try {
-    const c = JSON.parse(localStorage.getItem(CONVO_KEY));
+    const c = JSON.parse(sessionStorage.getItem(CONVO_KEY));
     if (c?.system && Array.isArray(c.messages)) return c;
   } catch {}
   return null;
@@ -26,7 +27,7 @@ function loadConvo() {
 
 function saveConvo(c) {
   try {
-    localStorage.setItem(CONVO_KEY, JSON.stringify(c));
+    sessionStorage.setItem(CONVO_KEY, JSON.stringify(c));
   } catch (e) {
     toast("Chat is too long to save. Start a new chat.", "error");
   }

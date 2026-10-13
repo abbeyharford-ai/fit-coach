@@ -1,4 +1,5 @@
 import * as store from "./store.js";
+import * as lock from "./lock.js";
 import * as fit from "./fitness.js";
 import { $, $$, esc, fmt, fmtDate, toast, busy } from "./ui.js";
 import { renderTrain, renderPRs } from "./views/train.js";
@@ -10,12 +11,30 @@ const VIEWS = { today: renderToday, train: renderTrain, prs: renderPRs, body: re
 
 let loaded = false;
 
+function setLockedChrome(locked) {
+  document.body.classList.toggle("locked", locked);
+  $("#lock-btn").hidden = locked || !lock.hasVault() || store.isDemo();
+}
+
 async function route() {
+  const root = $("#view");
+  // Gatekeeping before anything that needs the token.
+  if (!store.isDemo()) {
+    if (lock.legacySecrets()) {
+      setLockedChrome(true);
+      return renderProtect(root);
+    }
+    if (lock.hasVault() && !lock.isUnlocked()) {
+      setLockedChrome(true);
+      return renderLock(root);
+    }
+  }
+  setLockedChrome(false);
+
   let tab = location.hash.replace("#", "") || "today";
   if (!VIEWS[tab]) tab = "today";
   if (!store.isConfigured()) tab = "settings";
   $$("#tabs a").forEach((a) => a.classList.toggle("active", a.dataset.tab === tab));
-  const root = $("#view");
   if (store.isConfigured() && !loaded) {
     root.innerHTML = `<div class="empty"><span class="spinner"></span> Loading your data…</div>`;
     try {
@@ -62,6 +81,85 @@ export async function addWater(ml) {
   const t = new Date().toLocaleTimeString("en-GB", { timeZone: profile.timezone || undefined, hour: "2-digit", minute: "2-digit" });
   await store.update("water", (w) => ({ ...w, [d]: [...(w[d] || []), { t, ml }] }), `Water +${ml} ml`);
   toast(`+${ml} ml logged 💧`);
+}
+
+// ---------------------------------------------------------------- Lock
+
+function lockShell(title, sub, formHtml) {
+  return `
+  <section class="glow hero lock-screen">
+    <span class="eyebrow">Summer Coach<span class="dots"><i></i><i></i><i></i></span></span>
+    <div>
+      <h1>${title}</h1>
+      <p class="lock-sub">${sub}</p>
+      ${formHtml}
+    </div>
+  </section>`;
+}
+
+function renderLock(root) {
+  root.innerHTML = lockShell(
+    "Welcome back.",
+    "Enter your passcode to unlock your coach.",
+    `<form id="unlock" class="lock-form" autocomplete="on">
+      <input type="text" name="username" value="Summer Coach" autocomplete="username" hidden>
+      <label for="pass">Passcode</label>
+      <div class="row">
+        <input id="pass" name="pass" type="password" autocomplete="current-password" required autofocus style="flex:1">
+        <button class="dark" type="submit">Unlock</button>
+      </div>
+      <p class="lock-error" role="alert"></p>
+      <button type="button" class="ghost small" id="forgot">Forgot passcode?</button>
+    </form>`,
+  );
+  const form = $("#unlock", root);
+  form.pass.focus();
+  form.addEventListener("submit", (e) => {
+    e.preventDefault();
+    busy(e.submitter, async () => {
+      try {
+        await lock.unlock(form.pass.value);
+        route();
+      } catch (err) {
+        form.pass.value = "";
+        $(".lock-error", root).textContent = err.message;
+        form.pass.focus();
+      }
+    });
+  });
+  $("#forgot", root).addEventListener("click", () => {
+    if (!confirm("Reset this device? Your saved token and API key are erased here (your workouts and data on GitHub are untouched). You'll need to paste a GitHub token and Claude key again and pick a new passcode.")) return;
+    lock.wipe();
+    location.hash = "#settings";
+    route();
+  });
+}
+
+// One-time upgrade for keys saved before the passcode lock existed.
+function renderProtect(root) {
+  root.innerHTML = lockShell(
+    "Protect your keys.",
+    "Choose a passcode. It encrypts your GitHub token and Claude key on this device, and you'll enter it to open the app.",
+    `<form id="protect" class="lock-form">
+      <input type="text" name="username" value="Summer Coach" autocomplete="username" hidden>
+      <div class="fields">
+        <div class="field"><label>New passcode (${lock.MIN_PASSCODE}+ characters)</label><input name="p1" type="password" autocomplete="new-password" minlength="${lock.MIN_PASSCODE}" required></div>
+        <div class="field"><label>Confirm passcode</label><input name="p2" type="password" autocomplete="new-password" required></div>
+      </div>
+      <p class="lock-error" role="alert"></p>
+      <button class="dark" type="submit">Encrypt &amp; continue</button>
+    </form>`,
+  );
+  const form = $("#protect", root);
+  form.addEventListener("submit", (e) => {
+    e.preventDefault();
+    if (form.p1.value !== form.p2.value) return ($(".lock-error", root).textContent = "Passcodes don't match.");
+    busy(e.submitter, async () => {
+      await lock.createVault(form.p1.value, lock.legacySecrets());
+      toast("Keys encrypted ✓");
+      route();
+    });
+  });
 }
 
 // ---------------------------------------------------------------- Today
@@ -198,7 +296,7 @@ function renderSettings(root) {
 
     <form class="card" id="conn">
       <h2>Connections</h2>
-      <p class="small muted">Stored only in this browser (localStorage). Never commit these anywhere.</p>
+      <p class="small muted">Your token and API key stay on this device, encrypted with your passcode. Never paste them anywhere else.</p>
       <div class="fields">
         <div class="field"><label>GitHub username</label><input name="ghOwner" value="${esc(s.ghOwner)}" ${s.demo ? "" : "required"} autocomplete="off"></div>
         <div class="field"><label>Private data repo</label><input name="ghRepo" value="${esc(s.ghRepo || "fit-coach-data")}" ${s.demo ? "" : "required"} autocomplete="off"></div>
@@ -210,6 +308,23 @@ function renderSettings(root) {
           ${[["claude-sonnet-5-5", "Claude Sonnet 5.5 (default)"], ["claude-opus-5-5", "Claude Opus 5.5 (most capable, ~2x cost)"], ["claude-haiku-5-5", "Claude Haiku 5.5 (cheapest)"]].map(([v, l]) => `<option value="${v}" ${s.model === v ? "selected" : ""}>${l}</option>`).join("")}
         </select>
       </div>
+      ${lock.hasVault() ? `
+      <details style="margin:4px 0 14px">
+        <summary>Passcode</summary>
+        <p class="small muted" style="margin-top:8px">Your current passcode is needed to save a changed token or key, or to set a new passcode.</p>
+        <div class="fields">
+          <div class="field"><label>Current passcode</label><input name="curPass" type="password" autocomplete="current-password"></div>
+          <div class="field"><label>New passcode (optional)</label><input name="newPass" type="password" autocomplete="new-password" minlength="${lock.MIN_PASSCODE}"></div>
+          <div class="field"><label>Confirm new passcode</label><input name="newPass2" type="password" autocomplete="new-password"></div>
+        </div>
+      </details>` : `
+      <h3 style="margin-top:6px">Create a passcode</h3>
+      <p class="small muted">It encrypts your token and key on this device. You'll enter it each time you open the app (it auto-locks after 30 minutes idle). Use ${lock.MIN_PASSCODE}+ characters; a short phrase is ideal.</p>
+      <div class="fields">
+        <div class="field"><label>Passcode</label><input name="newPass" type="password" autocomplete="new-password" minlength="${lock.MIN_PASSCODE}"></div>
+        <div class="field"><label>Confirm passcode</label><input name="newPass2" type="password" autocomplete="new-password"></div>
+      </div>`}
+      <input type="text" name="username" value="Summer Coach" autocomplete="username" hidden>
       <button class="primary" type="submit">Save & connect</button>
     </form>
 
@@ -252,10 +367,25 @@ function renderSettings(root) {
 
   $("#conn", root).addEventListener("submit", (e) => {
     e.preventDefault();
-    const f = new FormData(e.target);
+    const f = Object.fromEntries([...new FormData(e.target).entries()].map(([k, v]) => [k, String(v).trim()]));
     busy(e.submitter, async () => {
-      const next = { ...s, ...Object.fromEntries([...f.entries()].map(([k, v]) => [k, String(v).trim()])) };
-      if (s.demo && !next.ghToken) {
+      // Secrets go into the encrypted vault; everything else into plain settings.
+      const secrets = Object.fromEntries(lock.SECRET_FIELDS.map((k) => [k, f[k] || ""]));
+      const current = lock.sessionSecrets();
+      const changed = lock.SECRET_FIELDS.some((k) => secrets[k] !== (current[k] || ""));
+      if (f.newPass && f.newPass !== f.newPass2) throw new Error("New passcodes don't match.");
+      if (lock.hasVault()) {
+        if (changed || f.newPass) {
+          if (!f.curPass) throw new Error("Open “Passcode” and enter your current passcode to save changed keys.");
+          await lock.verify(f.curPass);
+          await lock.createVault(f.newPass || f.curPass, secrets);
+        }
+      } else if (secrets.ghToken || secrets.anthropicKey) {
+        if (!f.newPass) throw new Error("Create a passcode to protect your token and key.");
+        await lock.createVault(f.newPass, secrets);
+      }
+      const next = { ...s, ghOwner: f.ghOwner, ghRepo: f.ghRepo, model: f.model };
+      if (s.demo && !secrets.ghToken) {
         store.saveSettings(next);
         return toast("Saved. Still in demo mode.");
       }
@@ -285,5 +415,10 @@ function renderSettings(root) {
   });
 }
 
+$("#lock-btn").addEventListener("click", () => {
+  lock.lock();
+  location.reload(); // drops all decrypted data from memory
+});
+lock.watchIdle(() => location.reload());
 window.addEventListener("hashchange", route);
 route();
