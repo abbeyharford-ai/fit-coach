@@ -1,0 +1,978 @@
+[
+ {
+  "id": "demo1",
+  "date": "2026-09-16",
+  "title": "Upper",
+  "unit": "lb",
+  "exercises": [
+   {
+    "name": "Bench Press",
+    "sets": [
+     {
+      "reps": 8,
+      "weight": 75.0
+     },
+     {
+      "reps": 8,
+      "weight": 75.0
+     },
+     {
+      "reps": 8,
+      "weight": 75.0
+     }
+    ]
+   },
+   {
+    "name": "Barbell Row",
+    "sets": [
+     {
+      "reps": 10,
+      "weight": 65.0
+     },
+     {
+      "reps": 10,
+      "weight": 65.0
+     },
+     {
+      "reps": 10,
+      "weight": 65.0
+     }
+    ]
+   },
+   {
+    "name": "Overhead Press",
+    "sets": [
+     {
+      "reps": 8,
+      "weight": 45.0
+     },
+     {
+      "reps": 8,
+      "weight": 45.0
+     },
+     {
+      "reps": 8,
+      "weight": 45.0
+     }
+    ]
+   }
+  ],
+  "notes": "",
+  "source": "manual"
+ },
+ {
+  "id": "demo2",
+  "date": "2026-09-17",
+  "title": "Lower",
+  "unit": "lb",
+  "exercises": [
+   {
+    "name": "Back Squat",
+    "sets": [
+     {
+      "reps": 5,
+      "weight": 120
+     },
+     {
+      "reps": 5,
+      "weight": 120
+     },
+     {
+      "reps": 5,
+      "weight": 120
+     }
+    ]
+   },
+   {
+    "name": "Romanian Deadlift",
+    "sets": [
+     {
+      "reps": 8,
+      "weight": 100
+     },
+     {
+      "reps": 8,
+      "weight": 100
+     },
+     {
+      "reps": 8,
+      "weight": 100
+     }
+    ]
+   },
+   {
+    "name": "Walking Lunge",
+    "sets": [
+     {
+      "reps": 10,
+      "weight": 20
+     },
+     {
+      "reps": 10,
+      "weight": 20
+     },
+     {
+      "reps": 10,
+      "weight": 20
+     }
+    ]
+   }
+  ],
+  "notes": "",
+  "source": "manual"
+ },
+ {
+  "id": "demo3",
+  "date": "2026-09-19",
+  "title": "Upper",
+  "unit": "lb",
+  "exercises": [
+   {
+    "name": "Bench Press",
+    "sets": [
+     {
+      "reps": 8,
+      "weight": 77.5
+     },
+     {
+      "reps": 8,
+      "weight": 77.5
+     },
+     {
+      "reps": 8,
+      "weight": 77.5
+     }
+    ]
+   },
+   {
+    "name": "Barbell Row",
+    "sets": [
+     {
+      "reps": 10,
+      "weight": 67.5
+     },
+     {
+      "reps": 10,
+      "weight": 67.5
+     },
+     {
+      "reps": 10,
+      "weight": 67.5
+     }
+    ]
+   },
+   {
+    "name": "Overhead Press",
+    "sets": [
+     {
+      "reps": 8,
+      "weight": 45.0
+     },
+     {
+      "reps": 8,
+      "weight": 45.0
+     },
+     {
+      "reps": 8,
+      "weight": 45.0
+     }
+    ]
+   }
+  ],
+  "notes": "",
+  "source": "manual"
+ },
+ {
+  "id": "demo4",
+  "date": "2026-09-21",
+  "title": "Lower",
+  "unit": "lb",
+  "exercises": [
+   {
+    "name": "Back Squat",
+    "sets": [
+     {
+      "reps": 5,
+      "weight": 125
+     },
+     {
+      "reps": 5,
+      "weight": 125
+     },
+     {
+      "reps": 5,
+      "weight": 125
+     }
+    ]
+   },
+   {
+    "name": "Romanian Deadlift",
+    "sets": [
+     {
+      "reps": 8,
+      "weight": 105
+     },
+     {
+      "reps": 8,
+      "weight": 105
+     },
+     {
+      "reps": 8,
+      "weight": 105
+     }
+    ]
+   },
+   {
+    "name": "Walking Lunge",
+    "sets": [
+     {
+      "reps": 10,
+      "weight": 20
+     },
+     {
+      "reps": 10,
+      "weight": 20
+     },
+     {
+      "reps": 10,
+      "weight": 20
+     }
+    ]
+   }
+  ],
+  "notes": "",
+  "source": "manual"
+ },
+ {
+  "id": "demo5",
+  "date": "2026-09-23",
+  "title": "Upper",
+  "unit": "lb",
+  "exercises": [
+   {
+    "name": "Bench Press",
+    "sets": [
+     {
+      "reps": 8,
+      "weight": 80.0
+     },
+     {
+      "reps": 8,
+      "weight": 80.0
+     },
+     {
+      "reps": 8,
+      "weight": 80.0
+     }
+    ]
+   },
+   {
+    "name": "Barbell Row",
+    "sets": [
+     {
+      "reps": 10,
+      "weight": 70.0
+     },
+     {
+      "reps": 10,
+      "weight": 70.0
+     },
+     {
+      "reps": 10,
+      "weight": 70.0
+     }
+    ]
+   },
+   {
+    "name": "Overhead Press",
+    "sets": [
+     {
+      "reps": 8,
+      "weight": 47.5
+     },
+     {
+      "reps": 8,
+      "weight": 47.5
+     },
+     {
+      "reps": 8,
+      "weight": 47.5
+     }
+    ]
+   }
+  ],
+  "notes": "",
+  "source": "manual"
+ },
+ {
+  "id": "demo6",
+  "date": "2026-09-24",
+  "title": "Lower",
+  "unit": "lb",
+  "exercises": [
+   {
+    "name": "Back Squat",
+    "sets": [
+     {
+      "reps": 5,
+      "weight": 130
+     },
+     {
+      "reps": 5,
+      "weight": 130
+     },
+     {
+      "reps": 5,
+      "weight": 130
+     }
+    ]
+   },
+   {
+    "name": "Romanian Deadlift",
+    "sets": [
+     {
+      "reps": 8,
+      "weight": 110
+     },
+     {
+      "reps": 8,
+      "weight": 110
+     },
+     {
+      "reps": 8,
+      "weight": 110
+     }
+    ]
+   },
+   {
+    "name": "Walking Lunge",
+    "sets": [
+     {
+      "reps": 10,
+      "weight": 20
+     },
+     {
+      "reps": 10,
+      "weight": 20
+     },
+     {
+      "reps": 10,
+      "weight": 20
+     }
+    ]
+   }
+  ],
+  "notes": "",
+  "source": "manual"
+ },
+ {
+  "id": "demo7",
+  "date": "2026-09-26",
+  "title": "Upper",
+  "unit": "lb",
+  "exercises": [
+   {
+    "name": "Bench Press",
+    "sets": [
+     {
+      "reps": 8,
+      "weight": 82.5
+     },
+     {
+      "reps": 8,
+      "weight": 82.5
+     },
+     {
+      "reps": 8,
+      "weight": 82.5
+     }
+    ]
+   },
+   {
+    "name": "Barbell Row",
+    "sets": [
+     {
+      "reps": 10,
+      "weight": 72.5
+     },
+     {
+      "reps": 10,
+      "weight": 72.5
+     },
+     {
+      "reps": 10,
+      "weight": 72.5
+     }
+    ]
+   },
+   {
+    "name": "Overhead Press",
+    "sets": [
+     {
+      "reps": 8,
+      "weight": 47.5
+     },
+     {
+      "reps": 8,
+      "weight": 47.5
+     },
+     {
+      "reps": 8,
+      "weight": 47.5
+     }
+    ]
+   }
+  ],
+  "notes": "",
+  "source": "manual"
+ },
+ {
+  "id": "demo8",
+  "date": "2026-09-28",
+  "title": "Lower",
+  "unit": "lb",
+  "exercises": [
+   {
+    "name": "Back Squat",
+    "sets": [
+     {
+      "reps": 5,
+      "weight": 135
+     },
+     {
+      "reps": 5,
+      "weight": 135
+     },
+     {
+      "reps": 5,
+      "weight": 135
+     }
+    ]
+   },
+   {
+    "name": "Romanian Deadlift",
+    "sets": [
+     {
+      "reps": 8,
+      "weight": 115
+     },
+     {
+      "reps": 8,
+      "weight": 115
+     },
+     {
+      "reps": 8,
+      "weight": 115
+     }
+    ]
+   },
+   {
+    "name": "Walking Lunge",
+    "sets": [
+     {
+      "reps": 10,
+      "weight": 20
+     },
+     {
+      "reps": 10,
+      "weight": 20
+     },
+     {
+      "reps": 10,
+      "weight": 20
+     }
+    ]
+   }
+  ],
+  "notes": "",
+  "source": "manual"
+ },
+ {
+  "id": "demo9",
+  "date": "2026-09-30",
+  "title": "Upper",
+  "unit": "lb",
+  "exercises": [
+   {
+    "name": "Bench Press",
+    "sets": [
+     {
+      "reps": 8,
+      "weight": 85.0
+     },
+     {
+      "reps": 8,
+      "weight": 85.0
+     },
+     {
+      "reps": 8,
+      "weight": 85.0
+     }
+    ]
+   },
+   {
+    "name": "Barbell Row",
+    "sets": [
+     {
+      "reps": 10,
+      "weight": 75.0
+     },
+     {
+      "reps": 10,
+      "weight": 75.0
+     },
+     {
+      "reps": 10,
+      "weight": 75.0
+     }
+    ]
+   },
+   {
+    "name": "Overhead Press",
+    "sets": [
+     {
+      "reps": 8,
+      "weight": 50.0
+     },
+     {
+      "reps": 8,
+      "weight": 50.0
+     },
+     {
+      "reps": 8,
+      "weight": 50.0
+     }
+    ]
+   }
+  ],
+  "notes": "",
+  "source": "manual"
+ },
+ {
+  "id": "demo10",
+  "date": "2026-10-01",
+  "title": "Lower",
+  "unit": "lb",
+  "exercises": [
+   {
+    "name": "Back Squat",
+    "sets": [
+     {
+      "reps": 5,
+      "weight": 140
+     },
+     {
+      "reps": 5,
+      "weight": 140
+     },
+     {
+      "reps": 5,
+      "weight": 140
+     }
+    ]
+   },
+   {
+    "name": "Romanian Deadlift",
+    "sets": [
+     {
+      "reps": 8,
+      "weight": 120
+     },
+     {
+      "reps": 8,
+      "weight": 120
+     },
+     {
+      "reps": 8,
+      "weight": 120
+     }
+    ]
+   },
+   {
+    "name": "Walking Lunge",
+    "sets": [
+     {
+      "reps": 10,
+      "weight": 20
+     },
+     {
+      "reps": 10,
+      "weight": 20
+     },
+     {
+      "reps": 10,
+      "weight": 20
+     }
+    ]
+   }
+  ],
+  "notes": "",
+  "source": "manual"
+ },
+ {
+  "id": "demo11",
+  "date": "2026-10-03",
+  "title": "Upper",
+  "unit": "lb",
+  "exercises": [
+   {
+    "name": "Bench Press",
+    "sets": [
+     {
+      "reps": 8,
+      "weight": 87.5
+     },
+     {
+      "reps": 8,
+      "weight": 87.5
+     },
+     {
+      "reps": 8,
+      "weight": 87.5
+     }
+    ]
+   },
+   {
+    "name": "Barbell Row",
+    "sets": [
+     {
+      "reps": 10,
+      "weight": 77.5
+     },
+     {
+      "reps": 10,
+      "weight": 77.5
+     },
+     {
+      "reps": 10,
+      "weight": 77.5
+     }
+    ]
+   },
+   {
+    "name": "Overhead Press",
+    "sets": [
+     {
+      "reps": 8,
+      "weight": 50.0
+     },
+     {
+      "reps": 8,
+      "weight": 50.0
+     },
+     {
+      "reps": 8,
+      "weight": 50.0
+     }
+    ]
+   }
+  ],
+  "notes": "",
+  "source": "manual"
+ },
+ {
+  "id": "demo12",
+  "date": "2026-10-05",
+  "title": "Lower",
+  "unit": "lb",
+  "exercises": [
+   {
+    "name": "Back Squat",
+    "sets": [
+     {
+      "reps": 5,
+      "weight": 145
+     },
+     {
+      "reps": 5,
+      "weight": 145
+     },
+     {
+      "reps": 5,
+      "weight": 145
+     }
+    ]
+   },
+   {
+    "name": "Romanian Deadlift",
+    "sets": [
+     {
+      "reps": 8,
+      "weight": 125
+     },
+     {
+      "reps": 8,
+      "weight": 125
+     },
+     {
+      "reps": 8,
+      "weight": 125
+     }
+    ]
+   },
+   {
+    "name": "Walking Lunge",
+    "sets": [
+     {
+      "reps": 10,
+      "weight": 20
+     },
+     {
+      "reps": 10,
+      "weight": 20
+     },
+     {
+      "reps": 10,
+      "weight": 20
+     }
+    ]
+   }
+  ],
+  "notes": "",
+  "source": "manual"
+ },
+ {
+  "id": "demo13",
+  "date": "2026-10-07",
+  "title": "Upper",
+  "unit": "lb",
+  "exercises": [
+   {
+    "name": "Bench Press",
+    "sets": [
+     {
+      "reps": 8,
+      "weight": 90.0
+     },
+     {
+      "reps": 8,
+      "weight": 90.0
+     },
+     {
+      "reps": 8,
+      "weight": 90.0
+     }
+    ]
+   },
+   {
+    "name": "Barbell Row",
+    "sets": [
+     {
+      "reps": 10,
+      "weight": 80.0
+     },
+     {
+      "reps": 10,
+      "weight": 80.0
+     },
+     {
+      "reps": 10,
+      "weight": 80.0
+     }
+    ]
+   },
+   {
+    "name": "Overhead Press",
+    "sets": [
+     {
+      "reps": 8,
+      "weight": 52.5
+     },
+     {
+      "reps": 8,
+      "weight": 52.5
+     },
+     {
+      "reps": 8,
+      "weight": 52.5
+     }
+    ]
+   }
+  ],
+  "notes": "",
+  "source": "manual"
+ },
+ {
+  "id": "demo14",
+  "date": "2026-10-08",
+  "title": "Lower",
+  "unit": "lb",
+  "exercises": [
+   {
+    "name": "Back Squat",
+    "sets": [
+     {
+      "reps": 5,
+      "weight": 150
+     },
+     {
+      "reps": 5,
+      "weight": 150
+     },
+     {
+      "reps": 5,
+      "weight": 150
+     }
+    ]
+   },
+   {
+    "name": "Romanian Deadlift",
+    "sets": [
+     {
+      "reps": 8,
+      "weight": 130
+     },
+     {
+      "reps": 8,
+      "weight": 130
+     },
+     {
+      "reps": 8,
+      "weight": 130
+     }
+    ]
+   },
+   {
+    "name": "Walking Lunge",
+    "sets": [
+     {
+      "reps": 10,
+      "weight": 20
+     },
+     {
+      "reps": 10,
+      "weight": 20
+     },
+     {
+      "reps": 10,
+      "weight": 20
+     }
+    ]
+   }
+  ],
+  "notes": "",
+  "source": "manual"
+ },
+ {
+  "id": "demo15",
+  "date": "2026-10-10",
+  "title": "Upper",
+  "unit": "lb",
+  "exercises": [
+   {
+    "name": "Bench Press",
+    "sets": [
+     {
+      "reps": 8,
+      "weight": 92.5
+     },
+     {
+      "reps": 8,
+      "weight": 92.5
+     },
+     {
+      "reps": 8,
+      "weight": 92.5
+     }
+    ]
+   },
+   {
+    "name": "Barbell Row",
+    "sets": [
+     {
+      "reps": 10,
+      "weight": 82.5
+     },
+     {
+      "reps": 10,
+      "weight": 82.5
+     },
+     {
+      "reps": 10,
+      "weight": 82.5
+     }
+    ]
+   },
+   {
+    "name": "Overhead Press",
+    "sets": [
+     {
+      "reps": 8,
+      "weight": 52.5
+     },
+     {
+      "reps": 8,
+      "weight": 52.5
+     },
+     {
+      "reps": 8,
+      "weight": 52.5
+     }
+    ]
+   }
+  ],
+  "notes": "",
+  "source": "manual"
+ },
+ {
+  "id": "demo16",
+  "date": "2026-10-12",
+  "title": "Lower",
+  "unit": "lb",
+  "exercises": [
+   {
+    "name": "Back Squat",
+    "sets": [
+     {
+      "reps": 5,
+      "weight": 155
+     },
+     {
+      "reps": 5,
+      "weight": 155
+     },
+     {
+      "reps": 5,
+      "weight": 155
+     }
+    ]
+   },
+   {
+    "name": "Romanian Deadlift",
+    "sets": [
+     {
+      "reps": 8,
+      "weight": 135
+     },
+     {
+      "reps": 8,
+      "weight": 135
+     },
+     {
+      "reps": 8,
+      "weight": 135
+     }
+    ]
+   },
+   {
+    "name": "Walking Lunge",
+    "sets": [
+     {
+      "reps": 10,
+      "weight": 20
+     },
+     {
+      "reps": 10,
+      "weight": 20
+     },
+     {
+      "reps": 10,
+      "weight": 20
+     }
+    ]
+   }
+  ],
+  "notes": "",
+  "source": "manual"
+ }
+]

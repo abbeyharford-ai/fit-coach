@@ -1,0 +1,62 @@
+[
+ {
+  "id": "s1",
+  "date": "2026-09-01",
+  "weight_kg": 68.9,
+  "body_fat_pct": 29.8,
+  "fat_mass_kg": 20.5,
+  "lean_mass_kg": 48.4,
+  "skeletal_muscle_kg": 25.1,
+  "visceral_fat_level": 6,
+  "bmr_kcal": 1418,
+  "total_body_water_l": 35.2,
+  "protein_kg": 9.6,
+  "mineral_kg": 3.4,
+  "biological_age": 31,
+  "segmental": [],
+  "analysis_md": "Baseline scan."
+ },
+ {
+  "id": "s2",
+  "date": "2026-10-07",
+  "weight_kg": 68.1,
+  "body_fat_pct": 28.1,
+  "fat_mass_kg": 19.1,
+  "lean_mass_kg": 49.0,
+  "skeletal_muscle_kg": 25.6,
+  "visceral_fat_level": 5,
+  "bmr_kcal": 1431,
+  "total_body_water_l": 35.6,
+  "protein_kg": 9.8,
+  "mineral_kg": 3.4,
+  "biological_age": 30,
+  "segmental": [
+   {
+    "segment": "Left arm",
+    "lean_kg": 2.4,
+    "fat_kg": 1.2
+   },
+   {
+    "segment": "Right arm",
+    "lean_kg": 2.5,
+    "fat_kg": 1.2
+   },
+   {
+    "segment": "Trunk",
+    "lean_kg": 22.8,
+    "fat_kg": 9.1
+   },
+   {
+    "segment": "Left leg",
+    "lean_kg": 7.9,
+    "fat_kg": 3.6
+   },
+   {
+    "segment": "Right leg",
+    "lean_kg": 8.1,
+    "fat_kg": 3.5
+   }
+  ],
+  "analysis_md": "## The headline\nIn 5 weeks you dropped **1.4 kg of fat** and added **0.5 kg of skeletal muscle**. That is a textbook recomp, even though the scale only moved 0.8 kg.\n\n## Priorities\n1. Keep protein at ~135 g/day.\n2. Add a 5th set to lower-body compounds.\n3. Hold the steps."
+ }
+]

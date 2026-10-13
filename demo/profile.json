@@ -1,0 +1,17 @@
+{
+ "name": "Alex",
+ "sex": "female",
+ "birth_year": 1994,
+ "height_cm": 168,
+ "weight_kg": 68,
+ "goal": "recomp",
+ "units": "lb",
+ "timezone": "America/New_York",
+ "summer_target_date": "2027-06-01",
+ "training_days_per_week": 4,
+ "wake_hour": 7,
+ "sleep_hour": 22,
+ "water_reminders": true,
+ "morning_checkin": true,
+ "diet_notes": "Lactose sensitive. Busy weekday lunches."
+}
