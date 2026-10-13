@@ -128,7 +128,8 @@ export function bmr(profile, scans) {
 /** Recomp targets: ~10% under maintenance, high protein, moderate fat, carbs fill the rest. */
 export function nutritionTargets(profile, scans, garmin, dateToday) {
   const since = addDays(dateToday, -14);
-  const days = (garmin.daily || []).filter((d) => d.date >= since && d.date < dateToday && d.total_kcal > 800);
+  // Skip days the watch wasn't worn: Garmin then reports only resting burn (BMR), which would drag the average down.
+  const days = (garmin.daily || []).filter((d) => d.date >= since && d.date < dateToday && d.total_kcal > 800 && (d.steps > 0 || d.active_kcal > 0));
   const b = bmr(profile, scans);
   let tdee, tdeeSource;
   if (days.length >= 5) {
