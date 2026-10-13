@@ -59,7 +59,7 @@ Open your site → ⚙︎ Settings → enter your username, `fit-coach-data` and
 ### 4. Add your Claude API key
 
 Get a key from console.anthropic.com (Settings → API keys) and paste it in the site's Settings. It's stored only in that browser, so do this once per device.
-Model: Opus 5.5 is the default (best coaching). Sonnet 5.5 or Haiku 5.5 are cheaper options.
+Model: Sonnet 5.5 is the default. Opus 5.5 (deeper coaching, about 2x the cost) and Haiku 5.5 (cheapest) are in the dropdown.
 
 ### 5. Connect Garmin
 
@@ -99,7 +99,7 @@ Check the log: you should see `Logged in. Syncing…`. Refresh your site and you
 - **PRs**: estimated 1RM uses Epley (`weight × (1 + reps/30)`) on sets of 12 reps or fewer.
 - **Schedule drift**: GitHub can run scheduled jobs late, so the check-in arrives within ~3 hours after your wake hour. The job checks its own state, so nothing gets missed or doubled.
 - **Garmin library**: `garminconnect` is unofficial. If Garmin changes its login, the sync can break. Bump the version in `requirements.txt`, or rerun `garmin_login.py` and update the secret.
-- **Costs**: GitHub is free (the hourly job uses about 800 of your 2,000 free Actions minutes per month). Claude usage is pay-as-you-go: a chat message or the daily check-in costs a cent or two, and a scan read or a week's meal plan costs well under a dollar on Opus 5.5.
+- **Costs**: GitHub is free (the hourly job uses about 800 of your 2,000 free Actions minutes per month). Claude usage is pay-as-you-go: a chat message or the daily check-in costs a cent or two, and a scan read or a week's meal plan costs well under a dollar on Sonnet 5.5.
 - **Privacy**: your data lives only in your private repo. The website is public but holds no data or keys. Don't share your browser's saved settings or your tokens.
 - **Not medical advice**: the coach will tell you to see a professional for pain, medical conditions or medications.
 

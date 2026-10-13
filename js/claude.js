@@ -16,7 +16,7 @@ function client() {
   return new Anthropic({ apiKey: anthropicKey, dangerouslyAllowBrowser: true });
 }
 
-const model = () => store.getSettings().model || "claude-opus-5-5";
+const model = () => store.getSettings().model || "claude-sonnet-5-5";
 
 function textOf(msg) {
   return msg.content.filter((b) => b.type === "text").map((b) => b.text).join("");

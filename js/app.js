@@ -40,7 +40,7 @@ export async function reload() {
 
 function updateSyncStatus() {
   if (store.isDemo()) {
-    $("#sync-status").innerHTML = `<span class="pill">Demo data · <a href="#settings">exit</a></span>`;
+    $("#sync-status").innerHTML = `Demo data · <a href="#settings">exit</a>`;
     return;
   }
   const g = store.data("garmin");
@@ -94,62 +94,74 @@ function renderToday(root) {
   const hour = new Date().toLocaleString("en-US", { timeZone: profile.timezone || undefined, hour: "numeric", hour12: false });
   const greet = hour < 12 ? "Good morning" : hour < 18 ? "Good afternoon" : "Good evening";
 
+  const pct = Math.min(100, Math.round((drunk / target) * 100));
+  const bb = todayG.body_battery_high ?? last.body_battery_high;
+  const gauge = (v, max = 100) => (v == null ? "" : `<span class="gauge" style="--pos:${Math.max(0, Math.min(1, v / max))}" aria-hidden="true"></span>`);
+  const dateLabel = new Date(d + "T12:00:00").toLocaleDateString(undefined, { weekday: "long", month: "short", day: "numeric" });
+
   root.innerHTML = `
   <div class="stack">
-    <div class="spread">
-      <h1>${greet}${profile.name ? ", " + esc(profile.name) : ""}</h1>
-      ${left != null ? `<span class="pill">${left} days to summer ☀️</span>` : ""}
-    </div>
-
-    ${checkin ? `<div class="card accent"><div class="small muted">Coach check-in · ${fmtDate(checkin.date, { weekday: "short", month: "short", day: "numeric" })}</div><p style="margin:.3rem 0 0">${esc(checkin.message)}</p></div>` : ""}
+    <section class="glow hero">
+      <div class="spread">
+        <span class="eyebrow">${esc(dateLabel)}<span class="dots"><i></i><i></i><i></i></span></span>
+        ${weekPRs.length ? `<span class="pill glass">🏆 ${weekPRs.length} PR${weekPRs.length > 1 ? "s" : ""} this week</span>` : ""}
+      </div>
+      <h1>${greet}${profile.name ? ", " + esc(profile.name) : ""}.</h1>
+      <div>
+        ${left != null ? `<div class="countdown"><b>${left}</b><span>days to summer</span></div>` : ""}
+        ${checkin ? `<p class="quote">“${esc(checkin.message)}”</p>` : ""}
+      </div>
+    </section>
 
     <div class="grid">
       <div class="card">
-        <div class="spread"><h2>Water</h2><span class="num"><b>${fmt(drunk / 1000, 2)}</b> / ${fmt(target / 1000, 2)} L</span></div>
-        <div class="water-bar"><div style="width:${Math.min(100, (drunk / target) * 100)}%"></div></div>
+        <div class="spread"><span class="label">Hydration</span><span class="label">${pct}% of goal</span></div>
+        <div class="meter" role="progressbar" aria-valuenow="${drunk}" aria-valuemax="${target}" aria-label="Water today">
+          <div style="width:${pct}%"></div><span>${fmt(drunk / 1000, 2)}<small>/ ${fmt(target / 1000, 1)} L</small></span>
+        </div>
         <div class="row">
-          <button data-water="250">+250 ml</button>
+          <button class="primary" data-water="250">+250 ml</button>
           <button data-water="500">+500 ml</button>
           <button data-water="750">+750 ml</button>
           <button class="ghost small" id="water-undo">Undo</button>
         </div>
-        <p class="small muted" style="margin-top:8px">Target = 35 ml/kg body weight + extra for today's training.</p>
+        <p class="small muted" style="margin-top:14px">35 ml per kg of body weight, plus extra for today's training.</p>
       </div>
 
       <div class="card">
-        <div class="spread"><h2>Recovery</h2><span class="small muted">${last.date ? fmtDate(last.date) : ""}</span></div>
-        ${last.date ? `<div class="stats">
-          <div class="stat"><div class="label">Sleep</div><div class="value">${fmt(last.sleep_hours, 1)}<small>h</small></div><div class="sub">${last.sleep_score ? "score " + last.sleep_score : ""}</div></div>
-          <div class="stat"><div class="label">Body battery</div><div class="value">${fmt(todayG.body_battery_high ?? last.body_battery_high)}</div><div class="sub">peak today</div></div>
+        <div class="spread"><span class="label">Recovery</span><span class="label">${last.date ? fmtDate(last.date) : ""}</span></div>
+        ${last.date ? `<div class="stats" style="margin-top:12px">
+          <div class="stat"><div class="label">Sleep</div><div class="value">${fmt(last.sleep_hours, 1)}<small>h</small></div>${gauge(last.sleep_score)}<div class="sub">${last.sleep_score ? "score " + last.sleep_score : ""}</div></div>
+          <div class="stat"><div class="label">Body battery</div><div class="value">${fmt(bb)}</div>${gauge(bb)}<div class="sub">peak today</div></div>
           <div class="stat"><div class="label">HRV</div><div class="value">${fmt(last.hrv_last_night)}<small>ms</small></div><div class="sub">${esc((last.hrv_status || "").toLowerCase())}</div></div>
-          <div class="stat"><div class="label">Resting HR</div><div class="value">${fmt(last.resting_hr)}</div><div class="sub">bpm</div></div>
-        </div>` : `<p class="muted">No Garmin data yet. See the setup guide in the README to connect Garmin.</p>`}
+          <div class="stat"><div class="label">Resting HR</div><div class="value">${fmt(last.resting_hr)}<small>bpm</small></div></div>
+        </div>` : `<p class="muted" style="margin-top:12px">No Garmin data yet. The README shows how to connect it.</p>`}
       </div>
 
       <div class="card">
-        <h2>This week</h2>
-        <div class="stats">
-          <div class="stat"><div class="label">Lifts</div><div class="value">${weekLifts.length}<small>/${profile.training_days_per_week || 4}</small></div></div>
-          <div class="stat"><div class="label">Cardio</div><div class="value">${weekActs.filter((a) => !/strength/.test(a.type || "")).length}</div><div class="sub">Garmin activities</div></div>
+        <span class="label">This week</span>
+        <div class="stats" style="margin-top:12px">
+          <div class="stat"><div class="label">Lifts</div><div class="value">${weekLifts.length}<small>/ ${profile.training_days_per_week || 4}</small></div></div>
+          <div class="stat"><div class="label">Cardio</div><div class="value">${weekActs.filter((a) => !/strength/.test(a.type || "")).length}</div><div class="sub">sessions</div></div>
           <div class="stat"><div class="label">Steps today</div><div class="value">${fmt(todayG.steps)}</div></div>
         </div>
-        ${weekPRs.length ? `<p style="margin-top:10px">${weekPRs.map((t) => `<span class="pill pr">🏆 ${esc(t)} ${unit}</span>`).join(" ")}</p>` : ""}
+        ${weekPRs.length ? `<div class="row" style="margin-top:16px">${weekPRs.map((t) => `<span class="pill pr">${esc(t)} ${unit}</span>`).join("")}</div>` : ""}
       </div>
 
       <div class="card">
-        <div class="spread"><h2>Today's fuel</h2><a class="small" href="#meals">Meal plan →</a></div>
-        <div class="stats">
+        <div class="spread"><span class="label">Today's fuel</span><a class="small" href="#meals">Meal plan →</a></div>
+        <div class="stats" style="margin-top:12px">
           <div class="stat"><div class="label">Calories</div><div class="value">${fmt(targets.kcal)}</div></div>
           <div class="stat"><div class="label">Protein</div><div class="value">${targets.protein_g}<small>g</small></div></div>
           <div class="stat"><div class="label">Carbs</div><div class="value">${targets.carbs_g}<small>g</small></div></div>
           <div class="stat"><div class="label">Fat</div><div class="value">${targets.fat_g}<small>g</small></div></div>
         </div>
-        <p class="small muted" style="margin-top:8px">${esc(targets.tdeeSource)}, then −10% for recomp.</p>
+        <p class="small muted" style="margin-top:14px">${esc(targets.tdeeSource)}, then −10% for recomp.</p>
       </div>
     </div>
 
     <div class="row">
-      <a class="btn" href="#train">Log a workout</a>
+      <a class="btn dark" href="#train">Log a workout</a>
       <a class="btn" href="#coach">Ask your coach</a>
       <button class="ghost" id="refresh">Refresh data</button>
     </div>
@@ -195,7 +207,7 @@ function renderSettings(root) {
       <div class="field"><label>Anthropic API key (for the coach, scans and meal plans)</label><input name="anthropicKey" type="password" value="${esc(s.anthropicKey)}" autocomplete="off"></div>
       <div class="field"><label>Claude model</label>
         <select name="model">
-          ${[["claude-opus-5-5", "Claude Opus 5.5 (best)"], ["claude-sonnet-5-5", "Claude Sonnet 5.5 (cheaper)"], ["claude-haiku-5-5", "Claude Haiku 5.5 (cheapest)"]].map(([v, l]) => `<option value="${v}" ${s.model === v ? "selected" : ""}>${l}</option>`).join("")}
+          ${[["claude-sonnet-5-5", "Claude Sonnet 5.5 (default)"], ["claude-opus-5-5", "Claude Opus 5.5 (most capable, ~2x cost)"], ["claude-haiku-5-5", "Claude Haiku 5.5 (cheapest)"]].map(([v, l]) => `<option value="${v}" ${s.model === v ? "selected" : ""}>${l}</option>`).join("")}
         </select>
       </div>
       <button class="primary" type="submit">Save & connect</button>

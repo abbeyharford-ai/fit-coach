@@ -63,6 +63,7 @@ export function lineChart(canvas, series, { unit = "", digits = 0 } = {}) {
   const grid = css("--border");
   const ink = css("--text-2");
   const palette = [css("--series-1"), css("--series-2"), css("--series-3")];
+  Chart.defaults.font.family = css("--sans");
   const chart = new Chart(canvas, {
     type: "line",
     data: {
@@ -86,7 +87,7 @@ export function lineChart(canvas, series, { unit = "", digits = 0 } = {}) {
         y: { grid: { color: grid }, border: { display: false }, ticks: { color: ink, maxTicksLimit: 5 } },
       },
       plugins: {
-        legend: { display: series.length > 1, labels: { color: ink, boxWidth: 12, usePointStyle: true } },
+        legend: { display: series.length > 1, labels: { color: ink, boxWidth: 7, boxHeight: 7, usePointStyle: true, padding: 16 } },
         tooltip: { callbacks: { title: (items) => fmtDate(items[0].label, { weekday: "short", month: "short", day: "numeric" }), label: (c) => `${c.dataset.label}: ${fmt(c.parsed.y, digits)} ${unit}` } },
       },
     },

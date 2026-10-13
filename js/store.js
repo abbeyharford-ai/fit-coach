@@ -15,9 +15,9 @@ export const DEFAULTS = {
 
 export function getSettings() {
   try {
-    return { model: "claude-opus-5-5", branch: "main", ...JSON.parse(localStorage.getItem(SETTINGS_KEY) || "{}") };
+    return { model: "claude-sonnet-5-5", branch: "main", ...JSON.parse(localStorage.getItem(SETTINGS_KEY) || "{}") };
   } catch {
-    return { model: "claude-opus-5-5", branch: "main" };
+    return { model: "claude-sonnet-5-5", branch: "main" };
   }
 }
 
