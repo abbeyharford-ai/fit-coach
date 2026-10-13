@@ -32,20 +32,20 @@ Want to look around first? Open the site and click **Try with demo data**.
 
 1. github.com → **New repository** → name it `fit-coach-data` → choose **Private** → Create.
 2. github.com → **New repository** → name it `fit-coach` → choose **Public** (free Pages needs a public repo; this repo has no personal data in it) → Create.
-3. Push the local folders (replace `YOUR_USER` with your GitHub username):
+3. Push the local folders (replace `abbeyharford-ai` with your GitHub username):
 
 ```bash
-cd ~/fit-coach-data && git remote add origin https://github.com/YOUR_USER/fit-coach-data.git && git push -u origin main
+cd ~/fit-coach-data && git remote add origin https://github.com/abbeyharford-ai/fit-coach-data.git && git push -u origin main
 ```
 
 ```bash
-cd ~/fit-coach && git remote add origin https://github.com/YOUR_USER/fit-coach.git && git push -u origin main
+cd ~/fit-coach && git remote add origin https://github.com/abbeyharford-ai/fit-coach.git && git push -u origin main
 ```
 
 ### 2. Turn on the website
 
 In **fit-coach** → Settings → Pages → Source: *Deploy from a branch* → Branch `main` / `(root)` → Save.
-A minute later your site is at `https://YOUR_USER.github.io/fit-coach/`.
+A minute later your site is at `https://abbeyharford-ai.github.io/fit-coach/`.
 
 ### 3. Make a GitHub token for the website
 
@@ -83,7 +83,7 @@ In **fit-coach-data** → Settings → Secrets and variables → Actions → **N
 4. In **fit-coach-data** → Settings → Secrets and variables → Actions:
    - Secret `NTFY_TOPIC` = your topic name
    - Secret `ANTHROPIC_API_KEY` = your Claude key (optional: without it, the morning check-in uses simple rules instead of Claude)
-   - **Variables** tab → `SITE_URL` = `https://YOUR_USER.github.io/fit-coach` (makes the notification buttons open your site)
+   - **Variables** tab → `SITE_URL` = `https://abbeyharford-ai.github.io/fit-coach` (makes the notification buttons open your site)
 
 ### 7. Start it
 
