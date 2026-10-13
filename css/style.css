@@ -239,3 +239,7 @@ body.locked .tabs, body.locked #sync-status { display: none; }
 .lock-form input { background: rgb(255 255 255 / .7); backdrop-filter: blur(6px); }
 .lock-form input:focus { background: #fff; }
 .lock-error { color: var(--bad); font-weight: 500; min-height: 1.4em; margin: 10px 0 4px; }
+
+/* ---------- profile ---------- */
+.name-input { font-family: var(--serif); font-size: clamp(1.8rem, 5vw, 2.4rem); font-weight: 500; min-height: 64px; padding: 8px 18px; margin-top: 4px; }
+.name-input::placeholder { color: var(--muted); font-style: italic; }

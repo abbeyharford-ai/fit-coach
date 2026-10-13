@@ -7,7 +7,7 @@ import { renderBody } from "./views/body.js";
 import { renderMeals } from "./views/meals.js";
 import { renderCoach } from "./views/coach.js";
 
-const VIEWS = { today: renderToday, train: renderTrain, prs: renderPRs, body: renderBody, meals: renderMeals, coach: renderCoach, settings: renderSettings };
+const VIEWS = { today: renderToday, train: renderTrain, prs: renderPRs, body: renderBody, meals: renderMeals, coach: renderCoach, profile: renderProfile, settings: renderSettings };
 
 let loaded = false;
 
@@ -205,6 +205,7 @@ function renderToday(root) {
         ${weekPRs.length ? `<span class="pill glass">🏆 ${weekPRs.length} PR${weekPRs.length > 1 ? "s" : ""} this week</span>` : ""}
       </div>
       <h1>${greet}${profile.name ? ", " + esc(profile.name) : ""}.</h1>
+      ${profile.name ? "" : `<a class="pill glass" href="#profile" style="align-self:flex-start;text-decoration:none">Add your name →</a>`}
       <div>
         ${left != null ? `<div class="countdown"><b>${left}</b><span>days to summer</span></div>` : ""}
         ${checkin ? `<p class="quote">“${esc(checkin.message)}”</p>` : ""}
@@ -282,15 +283,85 @@ function renderAgain(root) {
   renderToday(root);
 }
 
+// ---------------------------------------------------------------- Profile
+
+function renderProfile(root) {
+  const p = store.data("profile");
+  const sel = (name, opts, cur) => `<select name="${name}">${opts.map(([v, l]) => `<option value="${v}" ${String(cur) === String(v) ? "selected" : ""}>${l}</option>`).join("")}</select>`;
+  root.innerHTML = `
+  <form class="stack" id="profile">
+    <div>
+      <span class="eyebrow">Profile<span class="dots"><i></i><i></i><i></i></span></span>
+      <h1 style="margin-top:10px">${p.name ? `Hi, ${esc(p.name)}.` : "Let's get to know you."}</h1>
+      <p class="muted">Your coach uses this for your greeting, calorie targets, water goal and reminders.</p>
+    </div>
+
+    <div class="card">
+      <label for="pf-name">What should your coach call you?</label>
+      <input id="pf-name" class="name-input" name="name" value="${esc(p.name)}" placeholder="Your first name" autocomplete="given-name" maxlength="40">
+    </div>
+
+    <div class="grid">
+      <div class="card">
+        <span class="label">Body &amp; goal</span>
+        <div class="fields" style="margin-top:14px">
+          <div class="field"><label>Sex (for BMR &amp; ranges)</label>${sel("sex", [["female", "Female"], ["male", "Male"]], p.sex)}</div>
+          <div class="field"><label>Birth year</label><input name="birth_year" type="number" min="1920" max="2015" value="${esc(p.birth_year)}"></div>
+          <div class="field"><label>Height (cm)</label><input name="height_cm" type="number" step="0.5" value="${esc(p.height_cm)}"></div>
+          <div class="field"><label>Weight (kg), until your first scan</label><input name="weight_kg" type="number" step="0.1" value="${esc(p.weight_kg)}"></div>
+          <div class="field"><label>Goal</label>${sel("goal", [["recomp", "Recomp"], ["cut", "Lose fat"], ["bulk", "Build muscle"]], p.goal || "recomp")}</div>
+          <div class="field"><label>Summer target date</label><input name="summer_target_date" type="date" value="${esc(p.summer_target_date)}"></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <span class="label">Training &amp; schedule</span>
+        <div class="fields" style="margin-top:14px">
+          <div class="field"><label>Lifting days / week</label><input name="training_days_per_week" type="number" min="1" max="7" value="${esc(p.training_days_per_week)}"></div>
+          <div class="field"><label>Lifting units</label>${sel("units", [["lb", "lb"], ["kg", "kg"]], p.units || "lb")}</div>
+          <div class="field"><label>Wake hour (0-23)</label><input name="wake_hour" type="number" min="0" max="23" value="${esc(p.wake_hour ?? 7)}"></div>
+          <div class="field"><label>Bed hour (0-23)</label><input name="sleep_hour" type="number" min="0" max="23" value="${esc(p.sleep_hour ?? 22)}"></div>
+          <div class="field" style="grid-column:1/-1"><label>Timezone</label><input name="timezone" value="${esc(p.timezone || Intl.DateTimeFormat().resolvedOptions().timeZone)}"></div>
+        </div>
+        <div class="field"><label class="check"><input type="checkbox" name="water_reminders" ${p.water_reminders !== false ? "checked" : ""}> Water reminders on my phone</label></div>
+        <div class="field"><label class="check"><input type="checkbox" name="morning_checkin" ${p.morning_checkin !== false ? "checked" : ""}> Morning coach check-in</label></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <span class="label">Food notes for your coach</span>
+      <textarea name="diet_notes" style="margin-top:14px" placeholder="Allergies, foods you love or hate, when you eat, cooking time…">${esc(p.diet_notes)}</textarea>
+    </div>
+
+    <div class="row"><button class="dark" type="submit">Save profile</button>${store.isDemo() ? `<span class="small muted">Demo mode: changes aren't saved.</span>` : ""}</div>
+  </form>`;
+
+  $("#profile", root).addEventListener("submit", (e) => {
+    e.preventDefault();
+    const f = new FormData(e.target);
+    const numeric = ["birth_year", "height_cm", "weight_kg", "training_days_per_week", "wake_hour", "sleep_hour"];
+    busy(e.submitter, async () => {
+      const saved = await store.update("profile", (prof) => {
+        for (const [k, v] of f.entries()) prof[k] = numeric.includes(k) ? Number(v) : String(v).trim();
+        prof.water_reminders = f.has("water_reminders");
+        prof.morning_checkin = f.has("morning_checkin");
+        return prof;
+      }, "Update profile");
+      toast(saved.name ? `Saved. Hi, ${saved.name}! 👋` : "Profile saved ✓");
+      renderProfile(root);
+    });
+  });
+}
+
 // ---------------------------------------------------------------- Settings
 
 function renderSettings(root) {
   const s = store.getSettings();
-  const p = store.data("profile");
   const configured = store.isConfigured();
   root.innerHTML = `
   <div class="stack">
     <h1>Settings</h1>
+    ${configured && !s.demo ? `<div class="card"><span class="label">Your details</span><p style="margin:8px 0 0">Your name, body stats, goal and reminders are in <a href="#profile">Profile →</a></p></div>` : ""}
     ${configured ? "" : `<div class="card accent"><b>Welcome!</b> Connect your private data repo to get started (the README has a step-by-step guide), or look around with sample data first.<div class="row" style="margin-top:10px"><button class="primary" id="demo-on">Try with demo data</button></div></div>`}
     ${s.demo ? `<div class="card accent"><b>You're in demo mode.</b> Changes aren't saved anywhere. Add your Anthropic key below to try the coach, scans and meal plans.<div class="row" style="margin-top:10px"><button id="demo-off">Exit demo &amp; connect my data</button></div></div>` : ""}
 
@@ -328,29 +399,6 @@ function renderSettings(root) {
       <button class="primary" type="submit">Save & connect</button>
     </form>
 
-    ${configured ? `
-    <form class="card" id="profile">
-      <h2>Your profile</h2>
-      <p class="small muted">Saved to your data repo; the hourly trainer job reads it too.</p>
-      <div class="fields">
-        <div class="field"><label>First name</label><input name="name" value="${esc(p.name)}"></div>
-        <div class="field"><label>Sex (for BMR & ranges)</label><select name="sex"><option value="female" ${p.sex === "female" ? "selected" : ""}>Female</option><option value="male" ${p.sex === "male" ? "selected" : ""}>Male</option></select></div>
-        <div class="field"><label>Birth year</label><input name="birth_year" type="number" value="${esc(p.birth_year)}"></div>
-        <div class="field"><label>Height (cm)</label><input name="height_cm" type="number" step="0.5" value="${esc(p.height_cm)}"></div>
-        <div class="field"><label>Weight (kg), until your first scan</label><input name="weight_kg" type="number" step="0.1" value="${esc(p.weight_kg)}"></div>
-        <div class="field"><label>Lifting units</label><select name="units"><option value="lb" ${p.units !== "kg" ? "selected" : ""}>lb</option><option value="kg" ${p.units === "kg" ? "selected" : ""}>kg</option></select></div>
-        <div class="field"><label>Goal</label><select name="goal">${["recomp", "cut", "bulk"].map((g) => `<option ${p.goal === g ? "selected" : ""}>${g}</option>`).join("")}</select></div>
-        <div class="field"><label>Summer target date</label><input name="summer_target_date" type="date" value="${esc(p.summer_target_date)}"></div>
-        <div class="field"><label>Lifting days / week</label><input name="training_days_per_week" type="number" min="1" max="7" value="${esc(p.training_days_per_week)}"></div>
-        <div class="field"><label>Timezone</label><input name="timezone" value="${esc(p.timezone || Intl.DateTimeFormat().resolvedOptions().timeZone)}"></div>
-        <div class="field"><label>Wake hour (0-23)</label><input name="wake_hour" type="number" min="0" max="23" value="${esc(p.wake_hour ?? 7)}"></div>
-        <div class="field"><label>Bed hour (0-23)</label><input name="sleep_hour" type="number" min="0" max="23" value="${esc(p.sleep_hour ?? 22)}"></div>
-      </div>
-      <div class="field"><label>Food notes for the coach (allergies, likes, schedule)</label><textarea name="diet_notes">${esc(p.diet_notes)}</textarea></div>
-      <div class="field"><label class="check"><input type="checkbox" name="water_reminders" ${p.water_reminders !== false ? "checked" : ""}> Water reminders on my phone (ntfy)</label></div>
-      <div class="field"><label class="check"><input type="checkbox" name="morning_checkin" ${p.morning_checkin !== false ? "checked" : ""}> Morning coach check-in on my phone</label></div>
-      <button class="primary" type="submit">Save profile</button>
-    </form>` : ""}
   </div>`;
 
   $("#demo-on", root)?.addEventListener("click", () => {
@@ -399,20 +447,6 @@ function renderSettings(root) {
     });
   });
 
-  $("#profile", root)?.addEventListener("submit", (e) => {
-    e.preventDefault();
-    const f = new FormData(e.target);
-    const numeric = ["birth_year", "height_cm", "weight_kg", "training_days_per_week", "wake_hour", "sleep_hour"];
-    busy(e.submitter, async () => {
-      await store.update("profile", (prof) => {
-        for (const [k, v] of f.entries()) prof[k] = numeric.includes(k) ? Number(v) : String(v).trim();
-        prof.water_reminders = f.has("water_reminders");
-        prof.morning_checkin = f.has("morning_checkin");
-        return prof;
-      }, "Update profile");
-      toast("Profile saved ✓");
-    });
-  });
 }
 
 $("#lock-btn").addEventListener("click", () => {
