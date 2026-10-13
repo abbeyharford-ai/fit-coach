@@ -243,3 +243,36 @@ body.locked .tabs, body.locked #sync-status { display: none; }
 /* ---------- profile ---------- */
 .name-input { font-family: var(--serif); font-size: clamp(1.8rem, 5vw, 2.4rem); font-weight: 500; min-height: 64px; padding: 8px 18px; margin-top: 4px; }
 .name-input::placeholder { color: var(--muted); font-style: italic; }
+
+/* ---------- segmented toggle (Lifting / Erg, machine picker) ---------- */
+.seg { display: inline-flex; gap: 2px; padding: 4px; border-radius: 999px; background: var(--surface-2); border: 1px solid var(--line); }
+.seg button { border: 0; background: transparent; min-height: 30px; padding: 4px 14px; font-size: .85rem; box-shadow: none; }
+.seg button.on { background: var(--white); box-shadow: 0 2px 8px -3px rgb(190 90 120 / .4); }
+.seg-lg button { min-height: 36px; padding: 6px 20px; font-size: .95rem; }
+.seg-lg button.on { background: var(--ballet); }
+
+/* ---------- erg pieces ---------- */
+.piece-row { display: grid; grid-template-columns: 28px 1.2fr 1.2fr .8fr 32px; gap: 8px; align-items: center; margin-top: 8px; }
+.piece-head { margin-top: 4px; }
+.piece-head .label { font-size: .62rem; }
+.piece-row .idx { color: var(--muted); font-family: var(--mono); font-size: .8rem; text-align: center; }
+.piece-split { grid-column: 2 / -1; font-family: var(--mono); font-size: .72rem; letter-spacing: .04em; color: var(--rose-ink); min-height: 1em; margin-top: -2px; }
+.piece-split:empty { display: none; }
+
+/* ---------- monthly training dots ---------- */
+.dots-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px 6px; justify-items: center; }
+.dot-head { font-family: var(--mono); font-size: .62rem; letter-spacing: .1em; color: var(--muted); }
+.dot-cell { display: flex; flex-direction: column; align-items: center; gap: 3px; min-height: 30px; }
+.dot { width: 16px; height: 16px; border-radius: 50%; display: inline-block; background: transparent; border: 1.5px solid #ead7de; transition: transform .15s; }
+.dot.on { background: var(--series-1); border-color: var(--series-1); box-shadow: 0 2px 6px -1px rgb(212 86 122 / .5); }
+.dot.today { outline: 2px solid var(--text); outline-offset: 2px; }
+.dot.future { border-style: dotted; opacity: .5; }
+.dot-cell:hover .dot { transform: scale(1.2); }
+.dot-num { font-size: .62rem; color: var(--muted); font-variant-numeric: tabular-nums; }
+.month-name { font-family: var(--serif); font-size: 1.15rem; min-width: 8.5em; text-align: center; }
+.big-num { font-weight: 300; font-size: 1.6rem; letter-spacing: -.02em; }
+.legend-dots { display: inline-flex; align-items: center; gap: 6px; margin-left: auto; }
+.legend-dots .dot { width: 10px; height: 10px; }
+
+/* ---------- steps ---------- */
+.meter.steps > div { background: linear-gradient(90deg, #ffe0d1 0%, #ffb48f 45%, var(--series-1) 100%); }

@@ -14,6 +14,7 @@ const STARTERS = [
   "Build me a 4-day upper/lower split for my recomp",
   "How's my recovery looking?",
   "I just did bench 3x8 at 95 and rows 3x10 at 70",
+  "Rowed a 2k in 7:58 at 30 spm",
   "I'm craving sweets at night. Help",
 ];
 
@@ -49,7 +50,7 @@ function bubbles(messages) {
       for (const r of m.content.filter((b) => b.type === "tool_result")) {
         try {
           const res = JSON.parse(r.content);
-          if (res.saved) out.push({ role: "tool", text: `✓ Workout logged${res.new_records?.length ? " · 🏆 " + res.new_records.join(" · ") : ""}` });
+          if (res.saved) out.push({ role: "tool", text: `✓ ${res.erg ? "Erg session" : "Workout"} logged${res.new_records?.length ? " · 🏆 " + res.new_records.join(" · ") : ""}` });
           else if (res.total_ml != null) out.push({ role: "tool", text: `💧 Water: ${res.total_ml} / ${res.target_ml} ml` });
           else if (res.error) out.push({ role: "tool", text: `⚠️ ${res.error}` });
         } catch {}
@@ -128,8 +129,8 @@ export function renderCoach(root) {
         onTool: (name, res) => {
           const note = document.createElement("div");
           note.className = "msg tool";
-          note.textContent = name === "log_workout"
-            ? (res.saved ? `✓ Workout logged${res.new_records?.length ? " · 🏆 " + res.new_records.join(" · ") : ""}` : `⚠️ ${res.error}`)
+          note.textContent = name === "log_workout" || name === "log_erg"
+            ? (res.saved ? `✓ ${res.erg ? "Erg session" : "Workout"} logged${res.new_records?.length ? " · 🏆 " + res.new_records.join(" · ") : ""}` : `⚠️ ${res.error}`)
             : res.total_ml != null ? `💧 Water: ${res.total_ml} / ${res.target_ml} ml` : `⚠️ ${res.error}`;
           chat.insertBefore(note, live);
         },

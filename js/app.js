@@ -6,6 +6,7 @@ import { renderTrain, renderPRs } from "./views/train.js";
 import { renderBody } from "./views/body.js";
 import { renderMeals } from "./views/meals.js";
 import { renderCoach } from "./views/coach.js";
+import { renderMonthDots, renderSteps } from "./views/widgets.js";
 
 const VIEWS = { today: renderToday, train: renderTrain, prs: renderPRs, body: renderBody, meals: renderMeals, coach: renderCoach, profile: renderProfile, settings: renderSettings };
 
@@ -171,7 +172,7 @@ function renderToday(root) {
   const workouts = store.data("workouts");
   const d = fit.today(profile.timezone);
   const left = fit.daysUntil(profile.summer_target_date, d);
-  const target = fit.waterTarget(profile, scans, garmin, workouts, d);
+  const target = fit.waterTarget(profile, scans, garmin, workouts, d, store.data("ergs"));
   const drunk = fit.waterToday(store.data("water"), d);
   const checkin = store.data("checkins").filter((c) => c.kind === "morning").slice(-1)[0];
   const daily = garmin.daily || [];
@@ -180,6 +181,7 @@ function renderToday(root) {
   const weekStart = fit.addDays(d, -6);
   const weekLifts = workouts.filter((w) => w.date >= weekStart);
   const weekActs = (garmin.activities || []).filter((a) => a.date >= weekStart);
+  const weekErgs = store.data("ergs").filter((e) => e.date >= weekStart);
   const targets = fit.nutritionTargets(profile, scans, garmin, d);
   const unit = profile.units || "lb";
 
@@ -227,6 +229,8 @@ function renderToday(root) {
         <p class="small muted" style="margin-top:14px">35 ml per kg of body weight, plus extra for today's training.</p>
       </div>
 
+      <div class="card" id="w-steps"></div>
+
       <div class="card">
         <div class="spread"><span class="label">Recovery</span><span class="label">${last.date ? fmtDate(last.date) : ""}</span></div>
         ${last.date ? `<div class="stats" style="margin-top:12px">
@@ -237,12 +241,14 @@ function renderToday(root) {
         </div>` : `<p class="muted" style="margin-top:12px">No Garmin data yet. The README shows how to connect it.</p>`}
       </div>
 
+      <div class="card" id="w-dots"></div>
+
       <div class="card">
         <span class="label">This week</span>
         <div class="stats" style="margin-top:12px">
           <div class="stat"><div class="label">Lifts</div><div class="value">${weekLifts.length}<small>/ ${profile.training_days_per_week || 4}</small></div></div>
-          <div class="stat"><div class="label">Cardio</div><div class="value">${weekActs.filter((a) => !/strength/.test(a.type || "")).length}</div><div class="sub">sessions</div></div>
-          <div class="stat"><div class="label">Steps today</div><div class="value">${fmt(todayG.steps)}</div></div>
+          <div class="stat"><div class="label">Erg</div><div class="value">${weekErgs.length}</div><div class="sub">${fmt(weekErgs.reduce((t, e) => t + e.pieces.reduce((s, p) => s + p.distance_m, 0), 0))} m</div></div>
+          <div class="stat"><div class="label">Cardio</div><div class="value">${weekActs.filter((a) => !/strength|row|ski|indoor_cycling/.test(a.type || "")).length}</div><div class="sub">Garmin sessions</div></div>
         </div>
         ${weekPRs.length ? `<div class="row" style="margin-top:16px">${weekPRs.map((t) => `<span class="pill pr">${esc(t)} ${unit}</span>`).join("")}</div>` : ""}
       </div>
@@ -265,6 +271,9 @@ function renderToday(root) {
       <button class="ghost" id="refresh">Refresh data</button>
     </div>
   </div>`;
+
+  renderSteps($("#w-steps", root));
+  renderMonthDots($("#w-dots", root));
 
   $$("[data-water]", root).forEach((b) =>
     b.addEventListener("click", () => busy(b, async () => { await addWater(Number(b.dataset.water)); renderAgain(root); })),
@@ -321,10 +330,12 @@ function renderProfile(root) {
           <div class="field"><label>Lifting units</label>${sel("units", [["lb", "lb"], ["kg", "kg"]], p.units || "lb")}</div>
           <div class="field"><label>Wake hour (0-23)</label><input name="wake_hour" type="number" min="0" max="23" value="${esc(p.wake_hour ?? 7)}"></div>
           <div class="field"><label>Bed hour (0-23)</label><input name="sleep_hour" type="number" min="0" max="23" value="${esc(p.sleep_hour ?? 22)}"></div>
+          <div class="field" style="grid-column:1/-1"><label>Daily step goal (blank = use your Garmin goal)</label><input name="step_goal" type="number" min="1000" step="500" value="${esc(p.step_goal || "")}" placeholder="${esc(fit.stepGoal({}, store.data("garmin"), fit.today(p.timezone)).steps)}"></div>
           <div class="field" style="grid-column:1/-1"><label>Timezone</label><input name="timezone" value="${esc(p.timezone || Intl.DateTimeFormat().resolvedOptions().timeZone)}"></div>
         </div>
         <div class="field"><label class="check"><input type="checkbox" name="water_reminders" ${p.water_reminders !== false ? "checked" : ""}> Water reminders on my phone</label></div>
         <div class="field"><label class="check"><input type="checkbox" name="morning_checkin" ${p.morning_checkin !== false ? "checked" : ""}> Morning coach check-in</label></div>
+        <div class="field"><label class="check"><input type="checkbox" name="step_reminders" ${p.step_reminders !== false ? "checked" : ""}> Evening nudge if I'm short on steps</label></div>
       </div>
     </div>
 
@@ -339,12 +350,13 @@ function renderProfile(root) {
   $("#profile", root).addEventListener("submit", (e) => {
     e.preventDefault();
     const f = new FormData(e.target);
-    const numeric = ["birth_year", "height_cm", "weight_kg", "training_days_per_week", "wake_hour", "sleep_hour"];
+    const numeric = ["birth_year", "height_cm", "weight_kg", "training_days_per_week", "wake_hour", "sleep_hour", "step_goal"];
     busy(e.submitter, async () => {
       const saved = await store.update("profile", (prof) => {
         for (const [k, v] of f.entries()) prof[k] = numeric.includes(k) ? Number(v) : String(v).trim();
         prof.water_reminders = f.has("water_reminders");
         prof.morning_checkin = f.has("morning_checkin");
+        prof.step_reminders = f.has("step_reminders");
         return prof;
       }, "Update profile");
       toast(saved.name ? `Saved. Hi, ${saved.name}! 👋` : "Profile saved ✓");

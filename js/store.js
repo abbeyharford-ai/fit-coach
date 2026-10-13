@@ -8,6 +8,7 @@ const SETTINGS_KEY = "fitcoach.settings";
 export const DEFAULTS = {
   profile: {},
   workouts: [],
+  ergs: [],
   scans: [],
   garmin: { updated_at: null, daily: [], activities: [] },
   water: {},

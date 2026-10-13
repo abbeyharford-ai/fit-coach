@@ -5,6 +5,7 @@
 import Anthropic from "https://cdn.jsdelivr.net/npm/@anthropic-ai/sdk@0.129.0/+esm";
 import * as store from "./store.js";
 import * as fit from "./fitness.js";
+import * as erg from "./erg.js";
 
 // Server-side fallback: if a safety classifier ever declines a request, the API
 // retries it on a recommended fallback model instead of failing.
@@ -37,7 +38,8 @@ How you work:
 - Ground advice in their actual data (Garmin recovery and activity, logged lifts and PRs, Evolt body scans, water, nutrition targets). Quote the numbers you are using.
 - Programming: favor progressive overload on compound lifts, 10-20 hard sets per muscle per week, 1-3 reps in reserve on most sets. Adjust intensity to recovery (sleep, HRV, body battery, resting HR trends).
 - Nutrition for recomp: modest deficit, high protein spread over 3-5 meals, mostly whole foods, no crash dieting.
-- When they tell you about a workout they did, log it with the log_workout tool (ask only if something essential is missing, like weight or reps). When they say they drank water, log it with log_water. Celebrate PRs the tool reports.
+- When they tell you about a lifting workout, log it with log_workout; an erg (rowing/bike/ski machine) session goes to log_erg. Ask only if something essential is missing, like weight, reps, distance or time. When they say they drank water, log it with log_water. Celebrate PRs the tools report.
+- Erg knowledge: splits are per 500 m (RowErg/SkiErg) or per 1000 m (BikeErg); typical training zones are UT2 (easy, ~18-20 spm), UT1, AT, TR and AN; 2k is the benchmark test. Use watts and splits from their log when prescribing pieces.
 - Keep replies tight: short paragraphs or brief lists, no filler. Use markdown.
 - You are not a doctor. For pain beyond normal soreness, dizziness, disordered-eating signs, or medical conditions and medications, say so plainly and suggest a professional.`;
 
@@ -64,6 +66,18 @@ export function buildSnapshot() {
     .map((p) => `${p.name}: e1RM ${fit.fromKg(p.bestE1rm.kg, unit).toFixed(0)} ${unit} (${p.bestE1rm.date}), heaviest ${fit.fromKg(p.heaviest.kg, unit).toFixed(0)}x${p.heaviest.reps}, ${p.sessions} sessions`);
   const sortedScans = [...scans].sort((a, b) => a.date.localeCompare(b.date)).slice(-4).map(({ analysis_md, id, ...rest }) => rest);
   const targets = fit.nutritionTargets(profile, scans, garmin, d);
+  const ergs = store.data("ergs");
+  const ergLog = ergs
+    .filter((e) => e.date >= fit.addDays(d, -28))
+    .sort((a, b) => a.date.localeCompare(b.date))
+    .map((e) => {
+      const t = erg.totals(e);
+      return `${e.date} ${erg.MACHINES[e.machine]?.label} ${e.title || ""}: ${e.pieces.map((p) => `${p.distance_m}m in ${erg.formatTime(p.time_s)}${p.rate ? ` @${p.rate}` : ""}`).join(", ")} | avg split ${erg.formatTime(t.split)}, ${Math.round(t.watts)} W`;
+    })
+    .join("\n");
+  const ergPRs = [...erg.computeErgPRs(ergs).values()]
+    .map((p) => `${erg.MACHINES[p.machine].label} ${erg.eventLabel(p.event, p.kind)}: ${p.kind === "dist" ? erg.formatTime(p.best.time_s) : p.best.distance_m + " m"} (${p.best.date}, split ${erg.formatTime(erg.split(p.machine, p.best.distance_m, p.best.time_s))})`)
+    .join("\n");
   const plan = store.data("meal_plans")[0];
   const checkin = store.data("checkins").slice(-1)[0];
   const since14 = fit.addDays(d, -14);
@@ -81,6 +95,12 @@ ${compactWorkouts(workouts, fit.addDays(d, -28))}
 <personal_records>
 ${prs.join("\n") || "(none yet)"}
 </personal_records>
+<erg_log_last_28_days>
+${ergLog || "(none)"}
+</erg_log_last_28_days>
+<erg_records>
+${ergPRs || "(none yet)"}
+</erg_records>
 <current_meal_plan created="${plan?.created_at || ""}">${plan ? plan.plan_md.slice(0, 2500) : "(none)"}</current_meal_plan>
 <latest_morning_checkin>${checkin ? `${checkin.date}: ${checkin.message}` : "(none)"}</latest_morning_checkin>
 </athlete_data>`;
@@ -91,9 +111,12 @@ export function liveUpdate() {
   const profile = store.data("profile");
   const d = fit.today(profile.timezone);
   const water = fit.waterToday(store.data("water"), d);
-  const target = fit.waterTarget(profile, store.data("scans"), store.data("garmin"), store.data("workouts"), d);
+  const target = fit.waterTarget(profile, store.data("scans"), store.data("garmin"), store.data("workouts"), d, store.data("ergs"));
   const time = new Date().toLocaleString("en-US", { timeZone: profile.timezone || undefined, weekday: "long", hour: "numeric", minute: "2-digit" });
-  const todays = store.data("workouts").filter((w) => w.date === d).map((w) => w.title || "workout");
+  const todays = [
+    ...store.data("workouts").filter((w) => w.date === d).map((w) => w.title || "workout"),
+    ...store.data("ergs").filter((e) => e.date === d).map((e) => `${erg.MACHINES[e.machine]?.label} ${e.title || "session"}`),
+  ];
   return `<live_update>Now: ${time} (${d}). Water so far today: ${water} of ${target} ml. Workouts logged today: ${todays.join(", ") || "none"}.</live_update>`;
 }
 
@@ -134,6 +157,34 @@ const TOOLS = [
     },
   },
   {
+    name: "log_erg",
+    description: "Save a Concept2 erg session (RowErg, BikeErg or SkiErg). One piece = a continuous piece (counts toward ranked records like 2k or 30:00); several pieces = intervals. Returns any new records.",
+    eager_input_streaming: true,
+    input_schema: {
+      type: "object",
+      properties: {
+        date: { type: "string", description: "YYYY-MM-DD; today unless the user says otherwise" },
+        machine: { type: "string", enum: ["row", "bike", "ski"] },
+        title: { type: "string", description: "e.g. '2k test', '8x500m', 'Steady 30'" },
+        pieces: {
+          type: "array",
+          items: {
+            type: "object",
+            properties: {
+              distance_m: { type: "number" },
+              time_s: { type: "number", description: "Piece time in seconds, e.g. 7:45.2 -> 465.2" },
+              rate: { type: "integer", description: "Average strokes per minute, if given" },
+            },
+            required: ["distance_m", "time_s"],
+          },
+        },
+        avg_hr: { type: "integer" },
+        notes: { type: "string" },
+      },
+      required: ["date", "machine", "pieces"],
+    },
+  },
+  {
     name: "log_water",
     description: "Add water the user drank today. Returns the new total and today's target.",
     eager_input_streaming: true,
@@ -159,6 +210,19 @@ async function runTool(name, input) {
     const all = await store.update("workouts", (ws) => [...ws, workout], `Log workout ${workout.date} (coach)`);
     return { saved: true, workout_id: workout.id, new_records: fit.newPRsFor(workout, all).map((p) => p.text) };
   }
+  if (name === "log_erg") {
+    const ok = input && /^\d{4}-\d{2}-\d{2}$/.test(input.date) && erg.MACHINES[input.machine] && Array.isArray(input.pieces) && input.pieces.length &&
+      input.pieces.every((p) => p.distance_m > 0 && p.time_s > 0);
+    if (!ok) return { error: "Invalid erg input: need date (YYYY-MM-DD), machine (row|bike|ski) and pieces with positive distance_m and time_s." };
+    const session = {
+      id: store.uid(), date: input.date, machine: input.machine, title: input.title || "",
+      pieces: input.pieces.map((p) => ({ distance_m: p.distance_m, time_s: p.time_s, ...(p.rate ? { rate: p.rate } : {}) })),
+      ...(input.avg_hr ? { avg_hr: input.avg_hr } : {}), notes: input.notes || "", source: "coach",
+    };
+    const all = await store.update("ergs", (xs) => [...xs, session], `Log erg ${session.date} (coach)`);
+    const t = erg.totals(session);
+    return { saved: true, erg: true, avg_split: erg.formatTime(t.split), watts: Math.round(t.watts), new_records: erg.newErgPRs(session, all).filter((p) => p.kind === "pr").map((p) => p.text) };
+  }
   if (name === "log_water") {
     const ml = Number(input?.ml);
     if (!Number.isFinite(ml) || ml <= 0 || ml > 3000) return { error: "ml must be between 1 and 3000" };
@@ -166,7 +230,7 @@ async function runTool(name, input) {
     const d = fit.today(profile.timezone);
     const time = new Date().toLocaleTimeString("en-GB", { timeZone: profile.timezone || undefined, hour: "2-digit", minute: "2-digit" });
     const water = await store.update("water", (w) => ({ ...w, [d]: [...(w[d] || []), { t: time, ml }] }), `Water +${ml} ml`);
-    return { total_ml: fit.waterToday(water, d), target_ml: fit.waterTarget(profile, store.data("scans"), store.data("garmin"), store.data("workouts"), d) };
+    return { total_ml: fit.waterToday(water, d), target_ml: fit.waterTarget(profile, store.data("scans"), store.data("garmin"), store.data("workouts"), d, store.data("ergs")) };
   }
   return { error: `Unknown tool ${name}` };
 }

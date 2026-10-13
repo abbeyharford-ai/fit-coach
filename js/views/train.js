@@ -1,6 +1,21 @@
 import * as store from "../store.js";
 import * as fit from "../fitness.js";
 import { $, $$, esc, fmt, fmtLoad, fmtDate, toast, busy, lineChart } from "../ui.js";
+import { renderErgLog, renderErgPRs } from "./erg.js";
+
+let mode = "lift"; // "lift" | "erg"
+
+function modeHeader() {
+  return `<div class="spread"><h1>Train</h1>
+    <div class="seg seg-lg" role="group" aria-label="What are you logging?">
+      <button type="button" data-mode="lift" class="${mode === "lift" ? "on" : ""}">Lifting</button>
+      <button type="button" data-mode="erg" class="${mode === "erg" ? "on" : ""}">Erg</button>
+    </div></div>`;
+}
+
+function bindModeToggle(root) {
+  $$("[data-mode]", root).forEach((b) => b.addEventListener("click", () => { mode = b.dataset.mode; renderTrain(root); }));
+}
 
 const COMMON = ["Back Squat", "Front Squat", "Bench Press", "Incline Dumbbell Press", "Overhead Press", "Deadlift", "Romanian Deadlift", "Hip Thrust", "Barbell Row", "Pull-up", "Lat Pulldown", "Seated Cable Row", "Leg Press", "Bulgarian Split Squat", "Walking Lunge", "Leg Curl", "Leg Extension", "Dumbbell Shoulder Press", "Lateral Raise", "Bicep Curl", "Tricep Pushdown", "Calf Raise"];
 
@@ -44,6 +59,10 @@ function exerciseBlock(ex, i) {
 }
 
 export function renderTrain(root) {
+  if (mode === "erg") {
+    renderErgLog(root, modeHeader(), () => bindModeToggle(root));
+    return;
+  }
   const profile = store.data("profile");
   const d = fit.today(profile.timezone);
   draft ??= blankDraft(profile.units || "lb", d);
@@ -53,7 +72,7 @@ export function renderTrain(root) {
 
   root.innerHTML = `
   <div class="stack">
-    <h1>Train</h1>
+    ${modeHeader()}
     <form class="card" id="log">
       <h2>Log a workout</h2>
       <div class="fields">
@@ -89,6 +108,7 @@ export function renderTrain(root) {
     </div>
   </div>`;
 
+  bindModeToggle(root);
   const form = $("#log", root);
   const readForm = () => {
     const f = new FormData(form);
@@ -161,7 +181,8 @@ export function renderPRs(root) {
   const unit = store.data("profile").units || "lb";
   const prs = [...fit.computePRs(store.data("workouts")).entries()].filter(([, p]) => p.heaviest).sort((a, b) => b[1].sessions - a[1].sessions);
   if (!prs.length) {
-    root.innerHTML = `<h1>Personal records</h1><div class="card empty">Log some workouts and your PRs show up here automatically.</div>`;
+    root.innerHTML = `<div class="stack"><h1>Personal records</h1><div class="card empty">Log some lifting and your PRs show up here automatically.</div><div id="erg-prs"></div></div>`;
+    renderErgPRs($("#erg-prs", root));
     return;
   }
   selected = prs.some(([k]) => k === selected) ? selected : prs[0][0];
@@ -175,7 +196,7 @@ export function renderPRs(root) {
     <div class="card">
       <div class="table-wrap"><table>
         <thead><tr><th>Exercise</th><th>Est. 1RM</th><th>Heaviest set</th><th>Sessions</th></tr></thead>
-        <tbody>${prs.map(([k, x]) => `<tr class="clickable" data-ex="${esc(k)}" ${k === selected ? 'style="background:var(--accent-soft)"' : ""}>
+        <tbody>${prs.map(([k, x]) => `<tr class="clickable" data-ex="${esc(k)}" ${k === selected ? 'style="background:var(--ballet-soft)"' : ""}>
           <td>${esc(x.name)}</td>
           <td class="num">${x.bestE1rm ? `<b>${show(x.bestE1rm.kg)}</b> ${unit} <span class="muted small">${fmtDate(x.bestE1rm.date)}</span>` : "—"}</td>
           <td class="num">${show(x.heaviest.kg)} × ${x.heaviest.reps} <span class="muted small">${fmtDate(x.heaviest.date)}</span></td>
@@ -189,7 +210,9 @@ export function renderPRs(root) {
       <div class="chart-box"><canvas id="pr-chart" aria-label="${esc(p.name)} estimated one rep max over time"></canvas></div>
       ${repMax.length ? `<h3 style="margin-top:14px">Rep maxes</h3><div class="row">${repMax.map(([r, v]) => `<span class="pill">${r}RM: <b>${show(v.kg)}</b> ${unit}</span>`).join("")}</div>` : ""}
     </div>
+    <div id="erg-prs"></div>
   </div>`;
+  renderErgPRs($("#erg-prs", root));
 
   lineChart($("#pr-chart", root), [{ label: "Est. 1RM", data: p.history.map((h) => ({ x: h.date, y: Number(fit.fromKg(h.e1rmKg, unit).toFixed(1)) })) }], { unit });
   $$("tr[data-ex]", root).forEach((tr) => tr.addEventListener("click", () => { selected = tr.dataset.ex; renderPRs(root); }));

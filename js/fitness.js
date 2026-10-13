@@ -98,9 +98,12 @@ export function bodyWeightKg(profile, scans) {
 }
 
 /** Daily water goal (ml). Keep in sync with water_target_ml() in the data repo's scripts/common.py. */
-export function waterTarget(profile, scans, garmin, workouts, date) {
+export function waterTarget(profile, scans, garmin, workouts, date, ergs = []) {
   let ml = 35 * bodyWeightKg(profile, scans);
-  const activeMin = (garmin.activities || []).filter((a) => a.date === date).reduce((t, a) => t + (a.duration_min || 0), 0);
+  const garminMin = (garmin.activities || []).filter((a) => a.date === date).reduce((t, a) => t + (a.duration_min || 0), 0);
+  // An erg session may also be on the watch, so take the larger rather than adding both.
+  const ergMin = ergs.filter((e) => e.date === date).reduce((t, e) => t + (e.pieces || []).reduce((s, p) => s + (p.time_s || 0), 0) / 60, 0);
+  const activeMin = Math.max(garminMin, ergMin);
   ml += 12 * activeMin;
   if (workouts.some((w) => w.date === date) && activeMin === 0) ml += 500;
   return Math.round(ml / 250) * 250;
@@ -159,4 +162,35 @@ export function nutritionTargets(profile, scans, garmin, dateToday) {
 export function daysUntil(dateIso, fromIso) {
   if (!dateIso) return null;
   return Math.round((new Date(dateIso + "T12:00:00Z") - new Date(fromIso + "T12:00:00Z")) / 86400000);
+}
+
+/** Step goal: your own (Profile) > Garmin's goal for that day > latest Garmin goal > 8,000. */
+export function stepGoal(profile, garmin, date) {
+  if (Number(profile.step_goal) > 0) return { steps: Number(profile.step_goal), source: "your goal" };
+  const daily = garmin.daily || [];
+  const day = daily.find((d) => d.date === date && d.step_goal > 0);
+  const latest = [...daily].reverse().find((d) => d.step_goal > 0);
+  const g = day?.step_goal || latest?.step_goal;
+  return g ? { steps: g, source: "Garmin goal" } : { steps: 8000, source: "default goal" };
+}
+
+/** Consecutive days (ending today, or yesterday if today isn't done yet) meeting `test`. */
+export function streak(dates, today, test) {
+  let n = 0;
+  let d = test(today) ? today : addDays(today, -1);
+  while (dates.has(d) && test(d)) {
+    n++;
+    d = addDays(d, -1);
+  }
+  return n;
+}
+
+/** Map<date, [labels]> of every day you trained: lifting, erg, or a recorded Garmin activity. */
+export function trainingDays(workouts, ergs, garmin) {
+  const days = new Map();
+  const add = (date, label) => days.set(date, [...(days.get(date) || []), label]);
+  for (const w of workouts) add(w.date, w.title || "Lifting");
+  for (const e of ergs) if (!e.garmin_id) add(e.date, e.title || `${{ row: "Row", bike: "Bike", ski: "Ski" }[e.machine] || "Erg"} erg`);
+  for (const a of garmin.activities || []) add(a.date, a.name || String(a.type || "Activity").replace(/_/g, " "));
+  return days;
 }

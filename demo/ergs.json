@@ -1,0 +1,147 @@
+[
+ {
+  "id": "e1",
+  "date": "2026-09-03",
+  "machine": "row",
+  "title": "2k test",
+  "pieces": [
+   {
+    "distance_m": 2000,
+    "time_s": 487.6,
+    "rate": 29
+   }
+  ],
+  "avg_hr": 178,
+  "notes": "",
+  "source": "manual"
+ },
+ {
+  "id": "e2",
+  "date": "2026-09-17",
+  "machine": "row",
+  "title": "Steady 30'",
+  "pieces": [
+   {
+    "distance_m": 6550,
+    "time_s": 1800,
+    "rate": 20
+   }
+  ],
+  "avg_hr": 148,
+  "notes": "",
+  "source": "manual"
+ },
+ {
+  "id": "e3",
+  "date": "2026-09-24",
+  "machine": "row",
+  "title": "8\u00d7500m",
+  "pieces": [
+   {
+    "distance_m": 500,
+    "time_s": 112.4,
+    "rate": 30
+   },
+   {
+    "distance_m": 500,
+    "time_s": 112.0,
+    "rate": 30
+   },
+   {
+    "distance_m": 500,
+    "time_s": 111.8,
+    "rate": 30
+   },
+   {
+    "distance_m": 500,
+    "time_s": 112.3,
+    "rate": 30
+   },
+   {
+    "distance_m": 500,
+    "time_s": 111.6,
+    "rate": 30
+   },
+   {
+    "distance_m": 500,
+    "time_s": 111.9,
+    "rate": 30
+   },
+   {
+    "distance_m": 500,
+    "time_s": 112.2,
+    "rate": 30
+   },
+   {
+    "distance_m": 500,
+    "time_s": 110.9,
+    "rate": 30
+   }
+  ],
+  "notes": "1:00 rest",
+  "source": "manual"
+ },
+ {
+  "id": "e4",
+  "date": "2026-10-01",
+  "machine": "row",
+  "title": "5k",
+  "pieces": [
+   {
+    "distance_m": 5000,
+    "time_s": 1265.3,
+    "rate": 24
+   }
+  ],
+  "avg_hr": 165,
+  "notes": "",
+  "source": "manual"
+ },
+ {
+  "id": "e5",
+  "date": "2026-10-04",
+  "machine": "bike",
+  "title": "Spin",
+  "pieces": [
+   {
+    "distance_m": 10000,
+    "time_s": 1110.0,
+    "rate": 80
+   }
+  ],
+  "notes": "",
+  "source": "manual"
+ },
+ {
+  "id": "e6",
+  "date": "2026-10-08",
+  "machine": "row",
+  "title": "2k test",
+  "pieces": [
+   {
+    "distance_m": 2000,
+    "time_s": 481.2,
+    "rate": 30
+   }
+  ],
+  "avg_hr": 181,
+  "notes": "PB!",
+  "source": "manual"
+ },
+ {
+  "id": "e7",
+  "date": "2026-10-11",
+  "machine": "row",
+  "title": "Steady 30'",
+  "pieces": [
+   {
+    "distance_m": 6720,
+    "time_s": 1800,
+    "rate": 20
+   }
+  ],
+  "avg_hr": 146,
+  "notes": "",
+  "source": "manual"
+ }
+]

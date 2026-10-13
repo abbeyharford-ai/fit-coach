@@ -15,7 +15,8 @@
    "sleep_hours": 6.78,
    "sleep_score": 63,
    "hrv_last_night": 54,
-   "hrv_status": "BALANCED"
+   "hrv_status": "BALANCED",
+   "step_goal": 10000
   },
   {
    "date": "2026-09-14",
@@ -31,7 +32,8 @@
    "sleep_hours": 6.92,
    "sleep_score": 88,
    "hrv_last_night": 56,
-   "hrv_status": "BALANCED"
+   "hrv_status": "BALANCED",
+   "step_goal": 10000
   },
   {
    "date": "2026-09-15",
@@ -47,7 +49,8 @@
    "sleep_hours": 8.24,
    "sleep_score": 63,
    "hrv_last_night": 55,
-   "hrv_status": "BALANCED"
+   "hrv_status": "BALANCED",
+   "step_goal": 10000
   },
   {
    "date": "2026-09-16",
@@ -63,7 +66,8 @@
    "sleep_hours": 7.54,
    "sleep_score": 65,
    "hrv_last_night": 56,
-   "hrv_status": "UNBALANCED"
+   "hrv_status": "UNBALANCED",
+   "step_goal": 10000
   },
   {
    "date": "2026-09-17",
@@ -79,7 +83,8 @@
    "sleep_hours": 7.39,
    "sleep_score": 77,
    "hrv_last_night": 55,
-   "hrv_status": "BALANCED"
+   "hrv_status": "BALANCED",
+   "step_goal": 10000
   },
   {
    "date": "2026-09-18",
@@ -95,7 +100,8 @@
    "sleep_hours": 6.33,
    "sleep_score": 86,
    "hrv_last_night": 45,
-   "hrv_status": "BALANCED"
+   "hrv_status": "BALANCED",
+   "step_goal": 10000
   },
   {
    "date": "2026-09-19",
@@ -111,7 +117,8 @@
    "sleep_hours": 8.25,
    "sleep_score": 65,
    "hrv_last_night": 54,
-   "hrv_status": "BALANCED"
+   "hrv_status": "BALANCED",
+   "step_goal": 10000
   },
   {
    "date": "2026-09-20",
@@ -127,7 +134,8 @@
    "sleep_hours": 6.09,
    "sleep_score": 79,
    "hrv_last_night": 56,
-   "hrv_status": "BALANCED"
+   "hrv_status": "BALANCED",
+   "step_goal": 10000
   },
   {
    "date": "2026-09-21",
@@ -143,7 +151,8 @@
    "sleep_hours": 6.12,
    "sleep_score": 70,
    "hrv_last_night": 53,
-   "hrv_status": "UNBALANCED"
+   "hrv_status": "UNBALANCED",
+   "step_goal": 10000
   },
   {
    "date": "2026-09-22",
@@ -159,7 +168,8 @@
    "sleep_hours": 6.83,
    "sleep_score": 83,
    "hrv_last_night": 49,
-   "hrv_status": "BALANCED"
+   "hrv_status": "BALANCED",
+   "step_goal": 10000
   },
   {
    "date": "2026-09-23",
@@ -175,7 +185,8 @@
    "sleep_hours": 6.59,
    "sleep_score": 85,
    "hrv_last_night": 45,
-   "hrv_status": "BALANCED"
+   "hrv_status": "BALANCED",
+   "step_goal": 10000
   },
   {
    "date": "2026-09-24",
@@ -191,7 +202,8 @@
    "sleep_hours": 7.22,
    "sleep_score": 90,
    "hrv_last_night": 42,
-   "hrv_status": "BALANCED"
+   "hrv_status": "BALANCED",
+   "step_goal": 10000
   },
   {
    "date": "2026-09-25",
@@ -207,7 +219,8 @@
    "sleep_hours": 6.1,
    "sleep_score": 66,
    "hrv_last_night": 45,
-   "hrv_status": "UNBALANCED"
+   "hrv_status": "UNBALANCED",
+   "step_goal": 10000
   },
   {
    "date": "2026-09-26",
@@ -223,7 +236,8 @@
    "sleep_hours": 6.91,
    "sleep_score": 73,
    "hrv_last_night": 57,
-   "hrv_status": "UNBALANCED"
+   "hrv_status": "UNBALANCED",
+   "step_goal": 10000
   },
   {
    "date": "2026-09-27",
@@ -239,7 +253,8 @@
    "sleep_hours": 6.86,
    "sleep_score": 65,
    "hrv_last_night": 53,
-   "hrv_status": "UNBALANCED"
+   "hrv_status": "UNBALANCED",
+   "step_goal": 10000
   },
   {
    "date": "2026-09-28",
@@ -255,7 +270,8 @@
    "sleep_hours": 6.72,
    "sleep_score": 63,
    "hrv_last_night": 41,
-   "hrv_status": "BALANCED"
+   "hrv_status": "BALANCED",
+   "step_goal": 10000
   },
   {
    "date": "2026-09-29",
@@ -271,7 +287,8 @@
    "sleep_hours": 8.0,
    "sleep_score": 81,
    "hrv_last_night": 50,
-   "hrv_status": "BALANCED"
+   "hrv_status": "BALANCED",
+   "step_goal": 10000
   },
   {
    "date": "2026-09-30",
@@ -287,7 +304,8 @@
    "sleep_hours": 7.07,
    "sleep_score": 76,
    "hrv_last_night": 53,
-   "hrv_status": "BALANCED"
+   "hrv_status": "BALANCED",
+   "step_goal": 10000
   },
   {
    "date": "2026-10-01",
@@ -303,7 +321,8 @@
    "sleep_hours": 7.56,
    "sleep_score": 78,
    "hrv_last_night": 38,
-   "hrv_status": "BALANCED"
+   "hrv_status": "BALANCED",
+   "step_goal": 10000
   },
   {
    "date": "2026-10-02",
@@ -319,7 +338,8 @@
    "sleep_hours": 6.12,
    "sleep_score": 89,
    "hrv_last_night": 46,
-   "hrv_status": "UNBALANCED"
+   "hrv_status": "UNBALANCED",
+   "step_goal": 10000
   },
   {
    "date": "2026-10-03",
@@ -335,7 +355,8 @@
    "sleep_hours": 7.11,
    "sleep_score": 82,
    "hrv_last_night": 45,
-   "hrv_status": "UNBALANCED"
+   "hrv_status": "UNBALANCED",
+   "step_goal": 10000
   },
   {
    "date": "2026-10-04",
@@ -351,7 +372,8 @@
    "sleep_hours": 7.14,
    "sleep_score": 73,
    "hrv_last_night": 38,
-   "hrv_status": "BALANCED"
+   "hrv_status": "BALANCED",
+   "step_goal": 10000
   },
   {
    "date": "2026-10-05",
@@ -367,7 +389,8 @@
    "sleep_hours": 7.84,
    "sleep_score": 85,
    "hrv_last_night": 49,
-   "hrv_status": "BALANCED"
+   "hrv_status": "BALANCED",
+   "step_goal": 10000
   },
   {
    "date": "2026-10-06",
@@ -383,7 +406,8 @@
    "sleep_hours": 7.06,
    "sleep_score": 90,
    "hrv_last_night": 57,
-   "hrv_status": "BALANCED"
+   "hrv_status": "BALANCED",
+   "step_goal": 10000
   },
   {
    "date": "2026-10-07",
@@ -399,7 +423,8 @@
    "sleep_hours": 7.61,
    "sleep_score": 68,
    "hrv_last_night": 53,
-   "hrv_status": "BALANCED"
+   "hrv_status": "BALANCED",
+   "step_goal": 10000
   },
   {
    "date": "2026-10-08",
@@ -415,7 +440,8 @@
    "sleep_hours": 7.68,
    "sleep_score": 64,
    "hrv_last_night": 43,
-   "hrv_status": "BALANCED"
+   "hrv_status": "BALANCED",
+   "step_goal": 10000
   },
   {
    "date": "2026-10-09",
@@ -431,7 +457,8 @@
    "sleep_hours": 7.48,
    "sleep_score": 73,
    "hrv_last_night": 42,
-   "hrv_status": "UNBALANCED"
+   "hrv_status": "UNBALANCED",
+   "step_goal": 10000
   },
   {
    "date": "2026-10-10",
@@ -447,7 +474,8 @@
    "sleep_hours": 8.27,
    "sleep_score": 68,
    "hrv_last_night": 44,
-   "hrv_status": "BALANCED"
+   "hrv_status": "BALANCED",
+   "step_goal": 10000
   },
   {
    "date": "2026-10-11",
@@ -463,7 +491,8 @@
    "sleep_hours": 6.91,
    "sleep_score": 66,
    "hrv_last_night": 39,
-   "hrv_status": "UNBALANCED"
+   "hrv_status": "UNBALANCED",
+   "step_goal": 10000
   },
   {
    "date": "2026-10-12",
@@ -479,7 +508,8 @@
    "sleep_hours": 7.16,
    "sleep_score": 62,
    "hrv_last_night": 52,
-   "hrv_status": "BALANCED"
+   "hrv_status": "BALANCED",
+   "step_goal": 10000
   },
   {
    "date": "2026-10-13",
@@ -495,7 +525,8 @@
    "sleep_hours": 7.64,
    "sleep_score": 79,
    "hrv_last_night": 39,
-   "hrv_status": "BALANCED"
+   "hrv_status": "BALANCED",
+   "step_goal": 10000
   }
  ],
  "activities": [

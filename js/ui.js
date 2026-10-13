@@ -58,7 +58,8 @@ const css = (name) => getComputedStyle(document.documentElement).getPropertyValu
 /**
  * Single-measure line chart (one y-axis, always). series: [{label, data:[{x,y}], color?}]
  */
-export function lineChart(canvas, series, { unit = "", digits = 0 } = {}) {
+export function lineChart(canvas, series, { unit = "", digits = 0, format = null } = {}) {
+  const show = format || ((v) => `${fmt(v, digits)} ${unit}`.trim());
   charts.get(canvas)?.destroy();
   const grid = css("--border");
   const ink = css("--text-2");
@@ -84,11 +85,37 @@ export function lineChart(canvas, series, { unit = "", digits = 0 } = {}) {
       interaction: { mode: "index", intersect: false },
       scales: {
         x: { type: "category", labels: [...new Set(series.flatMap((s) => s.data.map((p) => p.x)))].sort(), grid: { display: false }, ticks: { color: ink, maxTicksLimit: 7, callback(v) { return fmtDate(this.getLabelForValue(v)); } } },
-        y: { grid: { color: grid }, border: { display: false }, ticks: { color: ink, maxTicksLimit: 5 } },
+        y: { grid: { color: grid }, border: { display: false }, ticks: { color: ink, maxTicksLimit: 5, ...(format ? { callback: (v) => format(v) } : {}) } },
       },
       plugins: {
         legend: { display: series.length > 1, labels: { color: ink, boxWidth: 7, boxHeight: 7, usePointStyle: true, padding: 16 } },
-        tooltip: { callbacks: { title: (items) => fmtDate(items[0].label, { weekday: "short", month: "short", day: "numeric" }), label: (c) => `${c.dataset.label}: ${fmt(c.parsed.y, digits)} ${unit}` } },
+        tooltip: { callbacks: { title: (items) => fmtDate(items[0].label, { weekday: "short", month: "short", day: "numeric" }), label: (c) => `${c.dataset.label}: ${show(c.parsed.y)}` } },
+      },
+    },
+  });
+  charts.set(canvas, chart);
+  return chart;
+}
+
+/** Daily bars with an optional dashed goal line (one measure, one axis). data: [{x: date, y}] */
+export function barChart(canvas, data, { label = "", goal = null, unit = "" } = {}) {
+  charts.get(canvas)?.destroy();
+  const ink = css("--text-2");
+  Chart.defaults.font.family = css("--sans");
+  const datasets = [{ type: "bar", label, data: data.map((p) => p.y), backgroundColor: css("--series-1"), borderRadius: 4, borderSkipped: "start", maxBarThickness: 18, categoryPercentage: 0.8 }];
+  if (goal) datasets.push({ type: "line", label: "Goal", data: data.map(() => goal), borderColor: css("--text-2"), borderWidth: 1.5, borderDash: [5, 4], pointRadius: 0, pointHoverRadius: 0 });
+  const chart = new Chart(canvas, {
+    data: { labels: data.map((p) => p.x), datasets },
+    options: {
+      maintainAspectRatio: false,
+      interaction: { mode: "index", intersect: false },
+      scales: {
+        x: { grid: { display: false }, ticks: { color: ink, maxTicksLimit: 7, callback(v) { return fmtDate(this.getLabelForValue(v), { weekday: "narrow" }); } } },
+        y: { beginAtZero: true, grid: { color: css("--line") }, border: { display: false }, ticks: { color: ink, maxTicksLimit: 4 } },
+      },
+      plugins: {
+        legend: { display: Boolean(goal), labels: { color: ink, boxWidth: 7, boxHeight: 7, usePointStyle: true, padding: 16 } },
+        tooltip: { callbacks: { title: (items) => fmtDate(items[0].label, { weekday: "short", month: "short", day: "numeric" }), label: (c) => `${c.dataset.label}: ${fmt(c.parsed.y)} ${unit}`.trim() } },
       },
     },
   });
